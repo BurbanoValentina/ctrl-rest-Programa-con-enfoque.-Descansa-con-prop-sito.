@@ -3,7 +3,7 @@ name: Deploy ctrl-rest
 on:
   push:
     branches: [main]
-  workflow_dispatch: # Permite deploy manual desde GitHub
+  workflow_dispatch:
 
 jobs:
   deploy-backend:
@@ -23,54 +23,41 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # Deploy cada Lambda
       - name: Deploy completarActividad
         run: |
-          cd backend/lambdas/completarActividad
+          cd lambdas/completarActividad
           zip -r function.zip .
-          aws lambda update-function-code \
-            --function-name pausa-activa-completarActividad \
-            --zip-file fileb://function.zip
+          aws lambda update-function-code --function-name pausa-activa-completarActividad --zip-file fileb://function.zip
 
       - name: Deploy obtenerPerfil
         run: |
-          cd backend/lambdas/obtenerPerfil
+          cd lambdas/obtenerPerfil
           zip -r function.zip .
-          aws lambda update-function-code \
-            --function-name pausa-activa-obtenerPerfil \
-            --zip-file fileb://function.zip
+          aws lambda update-function-code --function-name pausa-activa-obtenerPerfil --zip-file fileb://function.zip
 
       - name: Deploy obtenerRacha
         run: |
-          cd backend/lambdas/obtenerRacha
+          cd lambdas/obtenerRacha
           zip -r function.zip .
-          aws lambda update-function-code \
-            --function-name pausa-activa-obtenerRacha \
-            --zip-file fileb://function.zip
+          aws lambda update-function-code --function-name pausa-activa-obtenerRacha --zip-file fileb://function.zip
 
       - name: Deploy obtenerLeaderboard
         run: |
-          cd backend/lambdas/obtenerLeaderboard
+          cd lambdas/obtenerLeaderboard
           zip -r function.zip .
-          aws lambda update-function-code \
-            --function-name pausa-activa-obtenerLeaderboard \
-            --zip-file fileb://function.zip
+          aws lambda update-function-code --function-name pausa-activa-obtenerLeaderboard --zip-file fileb://function.zip
 
       - name: Deploy iniciarPausa
         run: |
-          cd backend/lambdas/iniciarPausa
+          cd lambdas/iniciarPausa
           zip -r function.zip .
-          aws lambda update-function-code \
-            --function-name pausa-activa-iniciarPausa \
-            --zip-file fileb://function.zip
+          aws lambda update-function-code --function-name pausa-activa-iniciarPausa --zip-file fileb://function.zip
 
       - name: Deploy generarReto
         run: |
-          cd backend/lambdas/generarReto
+          cd lambdas/generarReto
           zip -r function.zip .
-          aws lambda update-function-code \
-            --function-name pausa-activa-generarReto \
-            --zip-file fileb://function.zip
+          aws lambda update-function-code --function-name pausa-activa-generarReto --zip-file fileb://function.zip
 
   deploy-frontend:
     name: Deploy Frontend
@@ -105,6 +92,4 @@ jobs:
 
       - name: Invalidate CloudFront cache
         run: |
-            aws cloudfront create-invalidation \
-            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
-            --paths "/*"
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
