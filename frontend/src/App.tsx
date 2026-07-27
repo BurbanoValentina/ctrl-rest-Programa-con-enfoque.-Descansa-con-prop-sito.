@@ -1,0 +1,228 @@
+import { useState, useEffect, useCallback, useRef } from "react";
+import { PausaScreen } from "./components/PausaScreen";
+import { PingPongGame } from "./components/PingPongGame";
+import { LandingPage } from "./components/LandingPage";
+import { Dashboard } from "./components/Dashboard";
+import { usePostureSensor } from "./hooks/usePostureSensor";
+import "./App.css";
+
+type AppScreen = "landing" | "home" | "postura" | "pausa" | "pingpong";
+
+function App() {
+  const {
+    state,
+    connected,
+    cameraActive,
+    cameraError,
+    startCamera,
+    stopCamera,
+    startExercise,
+    stopExercise,
+    startPingPong,
+    stopPingPong,
+    videoRef,
+    canvasRef,
+  } = usePostureSensor();
+
+  const [screen, setScreen] = useState<AppScreen>("landing");
+  const [points, setPoints] = useState(0);
+  const [missionsCompleted, setMissionsCompleted] = useState(0);
+  const [lastReward, setLastReward] = useState<string | null>(null);
+  const displayVideoRef = useRef<HTMLVideoElement>(null);
+
+  const currentStream = videoRef.current?.srcObject as MediaStream | null;
+
+  // Assign stream to display video
+  useEffect(() => {
+    const video = displayVideoRef.current;
+    const stream = videoRef.current?.srcObject as MediaStream | null;
+    if (video && stream && video.srcObject !== stream) {
+      video.srcObject = stream;
+      video.play().catch(() => {});
+    }
+  });
+
+  // Auto trigger pausa
+  useEffect(() => {
+    if (state.triggerPause && screen === "postura" && state.mode === "postura") {
+      setScreen("pausa");
+      startExercise();
+    }
+  }, [state.triggerPause, screen, state.mode, startExercise]);
+
+  // Navigation
+  const goToPostura = useCallback(() => setScreen("postura"), []);
+  const goToPingPong = useCallback(() => { setScreen("pingpong"); startPingPong(); }, [startPingPong]);
+  const goHome = useCallback(() => {
+    if (screen === "pausa") stopExercise();
+    else if (screen === "pingpong") stopPingPong();
+    setScreen("home");
+  }, [screen, stopExercise, stopPingPong]);
+  const forcePausa = useCallback(() => { setScreen("pausa"); startExercise(); }, [startExercise]);
+
+  const handlePausaCompleted = useCallback(() => {
+    setPoints((p) => p + 10);
+    setMissionsCompleted((m) => m + 1);
+    setLastReward("+10 puntos 🎉");
+    stopExercise();
+    setScreen("home");
+    setTimeout(() => setLastReward(null), 3000);
+  }, [stopExercise]);
+
+  const handlePausaBack = useCallback(() => { stopExercise(); setScreen("home"); }, [stopExercise]);
+
+  const handlePingPongBack = useCallback(() => {
+    const earned = state.game?.record ? state.game.record * 2 : 0;
+    stopPingPong();
+    if (earned > 0) {
+      setPoints((p) => p + earned);
+      setMissionsCompleted((m) => m + 1);
+      setLastReward(`+${earned} puntos 🏓`);
+      setTimeout(() => setLastReward(null), 3000);
+    }
+    setScreen("home");
+  }, [stopPingPong, state.game]);
+
+  const goToApp = useCallback(() => setScreen("home"), []);
+  const goToLanding = useCallback(() => setScreen("landing"), []);
+
+  return (
+    <>
+      {/* Video oculto — SIEMPRE montado para que el hook funcione */}
+      <div style={{ position: "absolute", width: 0, height: 0, overflow: "hidden", pointerEvents: "none" }}>
+        <video ref={videoRef} autoPlay playsInline muted />
+        <canvas ref={canvasRef} />
+      </div>
+
+      {/* Reward toast */}
+      {lastReward && <div className="reward-toast">{lastReward}</div>}
+
+      {/* Landing */}
+      {screen === "landing" && <LandingPage onStart={goToApp} />}
+
+      {/* Dashboard */}
+      {screen === "home" && (
+        <Dashboard
+          points={points}
+          missionsCompleted={missionsCompleted}
+          cameraActive={cameraActive}
+          cameraError={cameraError}
+          connected={connected}
+          state={state}
+          videoRef={videoRef}
+          onStartCamera={startCamera}
+          onStopCamera={stopCamera}
+          onStartPostura={goToPostura}
+          onStartPausa={forcePausa}
+          onStartPingPong={goToPingPong}
+          onBackToLanding={goToLanding}
+        />
+      )}
+
+      {/* Postura — fullscreen con sidebar integrado */}
+      {screen === "postura" && (
+        <div className="postura-fullscreen">
+          <div className="postura-fullscreen__camera">
+            <video ref={displayVideoRef} autoPlay playsInline muted className="postura-fullscreen__video" />
+            <div className="postura-fullscreen__badge">
+              <span className="postura-fullscreen__dot" style={{ background: connected ? "#34d399" : "#f59e0b" }} />
+              {connected ? "En vivo" : "Conectando..."}
+            </div>
+            {state.status === "ok" && state.landmarks && <PostureOverlay state={state} />}
+          </div>
+          <div className="postura-fullscreen__panel">
+            <button className="postura-fullscreen__back" onClick={goHome}>
+              <span className="material-symbols-rounded">arrow_back</span> Dashboard
+            </button>
+            <div className="postura-fullscreen__header">
+              <span className="material-symbols-rounded">visibility</span>
+              <h2>Monitor de Postura</h2>
+              <span className="postura-fullscreen__pts">{points} XP</span>
+            </div>
+            <div className="postura-fullscreen__status">
+              {state.isGood ? (
+                <div className="postura-fullscreen__good">
+                  <span className="material-symbols-rounded">check_circle</span>
+                  <span>Buena postura</span>
+                </div>
+              ) : (
+                <div className="postura-fullscreen__bad">
+                  <span className="material-symbols-rounded">warning</span>
+                  <span>Corrige tu postura</span>
+                </div>
+              )}
+              {!state.isGood && state.reason && <p className="postura-fullscreen__reason">{state.reason}</p>}
+            </div>
+            {state.status === "ok" && (
+              <div className="postura-fullscreen__metrics">
+                <div className="postura-fullscreen__metric"><span>Ángulo cuello</span><b>{state.neckAngle}°</b></div>
+                <div className="postura-fullscreen__metric"><span>Encorvamiento</span><b>{state.slouchRatio}</b></div>
+                <div className="postura-fullscreen__metric"><span>Inclinación</span><b>{state.shoulderTilt}</b></div>
+                <div className="postura-fullscreen__metric"><span>Cabeza</span><b>{state.headDrop}</b></div>
+              </div>
+            )}
+            {state.status === "no_person" && (
+              <p className="postura-fullscreen__searching">
+                <span className="material-symbols-rounded">person_search</span> Buscando persona...
+              </p>
+            )}
+            {state.triggerPause && (
+              <div className="postura-fullscreen__alert">
+                <span className="material-symbols-rounded">notifications_active</span> ¡Hora de una PausaActiva!
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Pausa */}
+      {screen === "pausa" && (
+        <PausaScreen
+          exercise={state.exercise}
+          landmarks={state.landmarks}
+          connected={connected}
+          stream={currentStream}
+          onCompleted={handlePausaCompleted}
+          onBack={handlePausaBack}
+        />
+      )}
+
+      {/* Ping Pong */}
+      {screen === "pingpong" && (
+        <PingPongGame
+          game={state.game}
+          connected={connected}
+          stream={currentStream}
+          onBack={handlePingPongBack}
+        />
+      )}
+    </>
+  );
+}
+
+function PostureOverlay({ state }: { state: any }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !state.landmarks) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+    const color = state.isGood ? "#34d399" : "#f87171";
+    if (state.landmarks.connections) {
+      ctx.strokeStyle = color; ctx.lineWidth = 2;
+      for (const conn of state.landmarks.connections) {
+        ctx.beginPath(); ctx.moveTo((1 - conn.x1) * w, conn.y1 * h); ctx.lineTo((1 - conn.x2) * w, conn.y2 * h); ctx.stroke();
+      }
+    }
+    if (state.landmarks.points) {
+      for (const pt of state.landmarks.points) {
+        ctx.beginPath(); ctx.arc((1 - pt.x) * w, pt.y * h, 4, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill();
+      }
+    }
+  }, [state]);
+  return <canvas ref={canvasRef} width={640} height={480} className="postura-fullscreen__overlay" />;
+}
+
+export default App;

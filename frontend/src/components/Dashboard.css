@@ -1,0 +1,366 @@
+/* ============================================
+   DASHBOARD - Ctrl + Rest / BreakPoint
+   NO ESPACIOS VACÍOS - Todo llena la pantalla
+   ============================================ */
+.dash {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background: #0c0c1e;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #e0e0f0;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.dash-card {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+}
+
+/* ============ SIDEBAR ============ */
+.dash-sidebar {
+  width: 200px;
+  background: #08081a;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 0.8rem;
+  flex-shrink: 0;
+}
+
+.dash-sidebar__logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.6rem;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.dash-sidebar__logo .material-symbols-rounded {
+  color: #a78bfa;
+  font-size: 1.3rem;
+}
+
+.dash-sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+}
+
+.dash-sidebar__item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+}
+
+.dash-sidebar__item .material-symbols-rounded { font-size: 1.15rem; }
+.dash-sidebar__item:hover { background: rgba(124, 58, 237, 0.08); color: #e0e0f0; }
+.dash-sidebar__item.active { background: linear-gradient(135deg, #7c3aed, #6366f1); color: #fff; font-weight: 600; }
+
+.dash-sidebar__user {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: 0.5rem;
+}
+
+.dash-sidebar__user-avatar {
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, #1e1b4b, #312e81);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #a78bfa;
+}
+
+.dash-sidebar__user-avatar .material-symbols-rounded { font-size: 1.1rem; }
+.dash-sidebar__user-info { display: flex; flex-direction: column; }
+.dash-sidebar__user-name { font-size: 0.82rem; font-weight: 600; color: #fff; }
+.dash-sidebar__user-level { font-size: 0.7rem; color: #6b7280; }
+
+/* ============ MAIN ============ */
+.dash-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 1.2rem 1.5rem;
+}
+
+.dash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+}
+
+.dash-header__greeting h1 { font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 0.1rem; }
+.dash-header__greeting p { color: #9ca3af; font-size: 0.82rem; }
+
+.dash-header__streak {
+  display: flex; align-items: center; gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px; padding: 0.4rem 1rem;
+  font-size: 0.78rem; font-weight: 600; color: #fff;
+}
+
+.dash-header__streak .material-symbols-rounded { color: #f59e0b; font-size: 1rem; }
+
+.dash-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ============ TOP ROW ============ */
+.dash-top-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+/* ============ CAMERA (misiones tab) ============ */
+.dash-camera-area {
+  padding: 0;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  min-height: 280px;
+}
+
+.dash-camera-area__off {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.8rem;
+  padding: 1.5rem;
+  width: 100%;
+}
+
+.dash-camera-area__mascot { width: 120px; height: auto; }
+
+.dash-camera-area__bubble { background: rgba(255,255,255,0.92); border-radius: 10px; padding: 0.7rem 1rem; }
+.dash-camera-area__bubble h4 { color: #1f2937; font-size: 0.82rem; font-weight: 700; }
+.dash-camera-area__bubble p { color: #4b5563; font-size: 0.72rem; line-height: 1.4; }
+.dash-camera-area__error { color: #f87171; font-size: 0.75rem; }
+
+.dash-camera-area__btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  background: linear-gradient(135deg, #7c3aed, #6366f1);
+  color: #fff; border: none; padding: 0.55rem 1.2rem;
+  border-radius: 10px; font-size: 0.8rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+}
+
+.dash-camera-area__btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(124,58,237,0.4); }
+
+.dash-camera-area__on {
+  width: 100%; height: 100%;
+  position: relative; border-radius: 16px; overflow: hidden;
+}
+
+.dash-camera-area__video {
+  width: 100%; height: 100%;
+  object-fit: cover; transform: scaleX(-1);
+  display: block;
+}
+
+.dash-camera-area__badge {
+  position: absolute; top: 10px; left: 10px;
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(8,8,22,0.8); padding: 4px 10px;
+  border-radius: 14px; font-size: 0.68rem; color: #fff;
+}
+
+.dash-camera-area__dot { width: 7px; height: 7px; border-radius: 50%; }
+
+.dash-camera-area__stop {
+  position: absolute; bottom: 10px; right: 10px;
+  background: rgba(8,8,22,0.7); border: none; color: #f87171;
+  width: 30px; height: 30px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+
+.dash-camera-area__stop .material-symbols-rounded { font-size: 0.9rem; }
+
+/* ============ STATS COLUMN ============ */
+.dash-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.dash-stat { padding: 1rem 1.2rem; display: flex; flex-direction: column; justify-content: center; }
+
+.dash-stat__top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.3rem; }
+.dash-stat__label { color: #9ca3af; font-size: 0.7rem; font-weight: 500; }
+.dash-stat__icon { font-size: 1.1rem; }
+.dash-stat__icon--purple { color: #a78bfa; }
+.dash-stat__icon--green { color: #34d399; }
+.dash-stat__icon--blue { color: #60a5fa; }
+.dash-stat__value { display: block; font-size: 1.6rem; font-weight: 800; color: #fff; }
+.dash-stat__sub { color: #6b7280; font-size: 0.68rem; }
+
+/* ============ TIMER BIG ============ */
+.dash-timer-big {
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  flex: 1;
+}
+
+.dash-timer__label { color: #9ca3af; font-size: 0.82rem; font-weight: 500; }
+
+.dash-timer__display {
+  display: flex; align-items: center; gap: 1.2rem;
+}
+
+.dash-timer__time { font-size: 4rem; font-weight: 800; color: #fff; letter-spacing: -2px; }
+.dash-timer__ring { width: 100px; height: 100px; }
+
+.dash-timer__controls { display: flex; align-items: center; gap: 0.8rem; }
+
+.dash-timer__session {
+  padding: 0.45rem 0.9rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px; font-size: 0.78rem; color: #d1d5db;
+}
+
+.dash-timer__btn {
+  padding: 0.5rem 1.1rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px; background: transparent;
+  color: #d1d5db; font-size: 0.78rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+}
+
+.dash-timer__btn:hover { background: rgba(124,58,237,0.15); border-color: #7c3aed; color: #fff; }
+
+/* ============ MASCOT ROW ============ */
+.dash-mascot-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem 2rem;
+}
+
+.dash-mascot-row__img {
+  width: 100px;
+  height: auto;
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,0.4));
+}
+
+.dash-mascot-row__text h4 { color: #fff; font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
+.dash-mascot-row__text p { color: #9ca3af; font-size: 0.82rem; line-height: 1.5; }
+
+/* ============ MISSIONS ============ */
+.dash-missions-section h3 { color: #fff; font-size: 0.95rem; font-weight: 700; margin-bottom: 0.7rem; }
+.dash-missions-section__hint { color: #6b7280; font-size: 0.72rem; text-align: center; margin-top: 0.4rem; }
+
+.dash-missions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.dash-mission {
+  padding: 1.2rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #e0e0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.dash-mission:hover:not(:disabled) { border-color: rgba(124,58,237,0.4); transform: translateY(-2px); background: rgba(124,58,237,0.05); }
+.dash-mission:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.dash-mission__icon { font-size: 1.4rem; margin-bottom: 0.2rem; }
+.dash-mission__icon--green { color: #34d399; }
+.dash-mission__icon--blue { color: #60a5fa; }
+.dash-mission__icon--orange { color: #f59e0b; }
+.dash-mission h4 { font-size: 0.85rem; font-weight: 700; color: #fff; }
+.dash-mission p { font-size: 0.72rem; color: #9ca3af; line-height: 1.3; }
+.dash-mission__reward { font-size: 0.68rem; font-weight: 700; color: #a78bfa; margin-top: auto; }
+
+/* (timer styles moved to dash-timer-big above) */
+
+/* ============ INICIO (solo imagen) ============ */
+.dash-inicio {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+.dash-inicio__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 16px;
+}
+
+/* ============ TIMER BIG ============ */
+.dash-timer-big {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dash-timer__label { color: #9ca3af; font-size: 0.82rem; font-weight: 500; }
+
+.dash-timer__display {
+  display: flex; align-items: center; gap: 1.2rem;
+}
+
+.dash-timer__time { font-size: 3.5rem; font-weight: 800; color: #fff; letter-spacing: -2px; }
+.dash-timer__ring { width: 90px; height: 90px; }
+
+.dash-timer__controls { display: flex; align-items: center; gap: 0.8rem; }
+
+.dash-timer__session {
+  padding: 0.45rem 0.9rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px; font-size: 0.78rem; color: #d1d5db;
+}
+
+.dash-timer__btn {
+  padding: 0.5rem 1.1rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px; background: transparent;
+  color: #d1d5db; font-size: 0.78rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+}
+
+.dash-timer__btn:hover { background: rgba(124,58,237,0.15); border-color: #7c3aed; color: #fff; }
