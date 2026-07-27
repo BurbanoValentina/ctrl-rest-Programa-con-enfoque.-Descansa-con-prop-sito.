@@ -6,59 +6,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy-backend:
-    name: Deploy Lambdas
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Deploy completarActividad
-        run: |
-          cd lambdas/completarActividad
-          zip -r function.zip .
-          aws lambda update-function-code --function-name pausa-activa-completarActividad --zip-file fileb://function.zip
-
-      - name: Deploy obtenerPerfil
-        run: |
-          cd lambdas/obtenerPerfil
-          zip -r function.zip .
-          aws lambda update-function-code --function-name pausa-activa-obtenerPerfil --zip-file fileb://function.zip
-
-      - name: Deploy obtenerRacha
-        run: |
-          cd lambdas/obtenerRacha
-          zip -r function.zip .
-          aws lambda update-function-code --function-name pausa-activa-obtenerRacha --zip-file fileb://function.zip
-
-      - name: Deploy obtenerLeaderboard
-        run: |
-          cd lambdas/obtenerLeaderboard
-          zip -r function.zip .
-          aws lambda update-function-code --function-name pausa-activa-obtenerLeaderboard --zip-file fileb://function.zip
-
-      - name: Deploy iniciarPausa
-        run: |
-          cd lambdas/iniciarPausa
-          zip -r function.zip .
-          aws lambda update-function-code --function-name pausa-activa-iniciarPausa --zip-file fileb://function.zip
-
-      - name: Deploy generarReto
-        run: |
-          cd lambdas/generarReto
-          zip -r function.zip .
-          aws lambda update-function-code --function-name pausa-activa-generarReto --zip-file fileb://function.zip
-
   deploy-frontend:
     name: Deploy Frontend
     runs-on: ubuntu-latest
@@ -93,3 +40,22 @@ jobs:
       - name: Invalidate CloudFront cache
         run: |
           aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+
+  deploy-python-backend:
+    name: Deploy Python Backend to EC2
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/ctrl-rest-Programa-con-enfoque.-Descansa-con-prop-sito.
+            git pull origin main
+            cd backend
+            pip3.11 install -r requirements.txt
+            sudo systemctl restart pausaactiva
