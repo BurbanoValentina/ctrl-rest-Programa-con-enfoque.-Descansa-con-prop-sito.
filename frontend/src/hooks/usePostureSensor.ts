@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { PostureState } from "../types/posture";
 
-const WS_URL = "ws://localhost:8000/ws/postura";
+const WS_URL = import.meta.env.VITE_WS_URL || "ws://localhost:8000/ws/postura";
 const FRAME_INTERVAL_MS = 200; // ~5 FPS
 const RECONNECT_DELAY_MS = 1000;
 const MAX_RECONNECT_ATTEMPTS = 50;
 
 /**
- * Captura la webcam, envía frames al backend por WebSocket,
+ * Captura la webcam, envía frames al backend por WebSocket ,
  * y recibe métricas de postura o ejercicio en tiempo real.
  * 
  * Soporta dos modos:
