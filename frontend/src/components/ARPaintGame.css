@@ -1,0 +1,40 @@
+/* AR Paint - Todo controlado con manos */
+.paint-overlay { position:fixed; inset:0; z-index:1000; background:#0c0c1e; overflow:hidden; font-family:'Inter',sans-serif; }
+.paint-video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transform:scaleX(-1); z-index:1; }
+.paint-draw-canvas { position:absolute; inset:0; width:100%; height:100%; z-index:3; pointer-events:none; transform:scaleX(-1); }
+.paint-hand-canvas { position:absolute; inset:0; width:100%; height:100%; z-index:4; pointer-events:none; transform:scaleX(-1); }
+
+.paint-status { position:absolute; top:16px; left:16px; z-index:10; display:flex; align-items:center; gap:8px; background:rgba(8,8,22,0.9); padding:10px 18px; border-radius:20px; font-size:0.88rem; font-weight:600; color:#e0e0f0; border:1px solid rgba(255,255,255,0.08); }
+.paint-dot { width:8px; height:8px; border-radius:50%; background:#6b7280; flex-shrink:0; }
+.paint-dot.on { background:#34d399; box-shadow:0 0 6px rgba(52,211,153,0.5); }
+
+.paint-brush-info { position:absolute; top:16px; left:50%; transform:translateX(-50%); z-index:10; display:flex; align-items:center; gap:8px; background:rgba(8,8,22,0.9); padding:8px 16px; border-radius:16px; font-size:0.82rem; color:#d1d5db; border:1px solid rgba(255,255,255,0.08); }
+.paint-brush-info__color { width:16px; height:16px; border-radius:50%; border:2px solid rgba(255,255,255,0.3); }
+
+.paint-back { position:absolute; top:16px; right:16px; z-index:10; display:flex; align-items:center; gap:6px; background:rgba(8,8,22,0.9); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:10px 18px; color:#e0e0f0; font-size:0.88rem; font-weight:600; cursor:pointer; }
+.paint-back:hover { background:rgba(124,58,237,0.2); border-color:#7c3aed; }
+.paint-back .material-symbols-rounded { font-size:1.1rem; }
+
+/* Instructions overlay */
+.paint-instructions { position:absolute; inset:0; z-index:20; background:rgba(8,8,22,0.95); display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px); }
+.paint-instructions__card { background:rgba(255,255,255,0.03); border:1px solid rgba(124,58,237,0.3); border-radius:24px; padding:2.5rem 3rem; max-width:520px; width:90%; text-align:center; }
+.paint-instructions__card h2 { display:flex; align-items:center; justify-content:center; gap:0.5rem; color:#fff; font-size:1.8rem; font-weight:800; margin-bottom:0.3rem; }
+.paint-instructions__card h2 .material-symbols-rounded { font-size:2rem; color:#a78bfa; }
+.paint-instructions__sub { color:#9ca3af; font-size:0.95rem; margin-bottom:1.5rem; }
+
+.paint-instructions__list { display:flex; flex-direction:column; gap:1rem; text-align:left; margin-bottom:2rem; }
+.paint-instructions__item { display:flex; align-items:flex-start; gap:1rem; }
+.paint-instructions__gesture { font-size:1.8rem; min-width:40px; text-align:center; }
+.paint-instructions__item strong { color:#fff; font-size:0.92rem; display:block; margin-bottom:0.15rem; }
+.paint-instructions__item p { color:#9ca3af; font-size:0.8rem; margin:0; line-height:1.4; }
+
+.paint-instructions__btn { display:inline-flex; align-items:center; gap:0.5rem; padding:0.9rem 2rem; background:linear-gradient(135deg,#7c3aed,#6366f1); color:#fff; border:none; border-radius:14px; font-size:1rem; font-weight:700; cursor:pointer; transition:all 0.2s; }
+.paint-instructions__btn:hover { box-shadow:0 6px 24px rgba(124,58,237,0.5); transform:translateY(-2px); }
+.paint-instructions__btn .material-symbols-rounded { font-size:1.3rem; }
+
+/* Persistent help panel */
+.paint-help { position:absolute; bottom:16px; left:16px; z-index:10; background:rgba(8,8,22,0.9); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:12px 16px; display:flex; flex-direction:column; gap:4px; }
+.paint-help__title { display:flex; align-items:center; gap:4px; font-size:0.75rem; font-weight:700; color:#a78bfa; margin-bottom:4px; }
+.paint-help__title .material-symbols-rounded { font-size:1rem; }
+.paint-help__item { display:flex; align-items:center; gap:6px; font-size:0.72rem; color:#d1d5db; }
+.paint-help__item span:first-child { min-width:24px; text-align:center; }

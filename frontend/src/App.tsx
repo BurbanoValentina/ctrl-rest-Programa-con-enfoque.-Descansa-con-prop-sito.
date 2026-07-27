@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { PausaScreen } from "./components/PausaScreen";
 import { PingPongGame } from "./components/PingPongGame";
+import { ARPaintGame } from "./components/ARPaintGame";
+import { MemeGenerator } from "./components/MemeGenerator";
 import { LandingPage } from "./components/LandingPage";
 import { Dashboard } from "./components/Dashboard";
 import { usePostureSensor } from "./hooks/usePostureSensor";
 import "./App.css";
 
-type AppScreen = "landing" | "home" | "postura" | "pausa" | "pingpong";
+type AppScreen = "landing" | "home" | "postura" | "pausa" | "pingpong" | "paint" | "memes";
 
 function App() {
   const {
@@ -53,17 +55,19 @@ function App() {
   // Navigation
   const goToPostura = useCallback(() => setScreen("postura"), []);
   const goToPingPong = useCallback(() => { setScreen("pingpong"); startPingPong(); }, [startPingPong]);
+  const goToPaint = useCallback(() => { setScreen("paint"); startPingPong(); }, [startPingPong]);
+  const goToMemes = useCallback(() => setScreen("memes"), []);
   const goHome = useCallback(() => {
     if (screen === "pausa") stopExercise();
-    else if (screen === "pingpong") stopPingPong();
+    else if (screen === "pingpong" || screen === "paint") stopPingPong();
     setScreen("home");
   }, [screen, stopExercise, stopPingPong]);
   const forcePausa = useCallback(() => { setScreen("pausa"); startExercise(); }, [startExercise]);
 
   const handlePausaCompleted = useCallback(() => {
-    setPoints((p) => p + 10);
+    setPoints((p) => p + 15);
     setMissionsCompleted((m) => m + 1);
-    setLastReward("+10 puntos 🎉");
+    setLastReward("+15 XP • +15 monedas 🎉");
     stopExercise();
     setScreen("home");
     setTimeout(() => setLastReward(null), 3000);
@@ -72,14 +76,12 @@ function App() {
   const handlePausaBack = useCallback(() => { stopExercise(); setScreen("home"); }, [stopExercise]);
 
   const handlePingPongBack = useCallback(() => {
-    const earned = state.game?.record ? state.game.record * 2 : 0;
+    const earned = state.game?.record ? Math.max(state.game.record * 2, 20) : 20;
     stopPingPong();
-    if (earned > 0) {
-      setPoints((p) => p + earned);
-      setMissionsCompleted((m) => m + 1);
-      setLastReward(`+${earned} puntos 🏓`);
-      setTimeout(() => setLastReward(null), 3000);
-    }
+    setPoints((p) => p + earned);
+    setMissionsCompleted((m) => m + 1);
+    setLastReward(`+${earned} XP • +${earned} monedas 🏓`);
+    setTimeout(() => setLastReward(null), 3000);
     setScreen("home");
   }, [stopPingPong, state.game]);
 
@@ -115,7 +117,11 @@ function App() {
           onStartPostura={goToPostura}
           onStartPausa={forcePausa}
           onStartPingPong={goToPingPong}
+          onStartPaint={goToPaint}
+          onStartMemes={goToMemes}
           onBackToLanding={goToLanding}
+          onAddPoints={(pts: number) => setPoints((p) => p + pts)}
+          onAddMission={() => setMissionsCompleted((m) => m + 1)}
         />
       )}
 
@@ -194,6 +200,28 @@ function App() {
           connected={connected}
           stream={currentStream}
           onBack={handlePingPongBack}
+        />
+      )}
+
+      {/* AR Paint */}
+      {screen === "paint" && (
+        <ARPaintGame
+          game={state.game}
+          connected={connected}
+          stream={currentStream}
+          onBack={() => { stopPingPong(); setPoints((p) => p + 15); setMissionsCompleted((m) => m + 1); setScreen("home"); }}
+        />
+      )}
+
+      {/* Meme Generator */}
+      {screen === "memes" && (
+        <MemeGenerator
+          connected={connected}
+          stream={currentStream}
+          srcVideoRef={videoRef}
+          state={state}
+          landmarks={state.landmarks}
+          onBack={() => { setPoints((p) => p + 10); setMissionsCompleted((m) => m + 1); setScreen("home"); }}
         />
       )}
     </>

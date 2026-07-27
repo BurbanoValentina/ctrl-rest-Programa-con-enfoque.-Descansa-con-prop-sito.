@@ -14,79 +14,248 @@ interface DashboardProps {
   onStartPostura: () => void;
   onStartPausa: () => void;
   onStartPingPong: () => void;
+  onStartPaint: () => void;
+  onStartMemes: () => void;
   onBackToLanding: () => void;
+  onAddPoints: (pts: number) => void;
+  onAddMission: () => void;
 }
 
+type Tab = "inicio" | "misiones" | "tienda" | "progreso" | "regalos" | "comunidad";
+
+const PHRASES = [
+  "¡Tú puedes! Recuerda tomar descansos. 💜",
+  "Un break a tiempo previene el burnout. 🌟",
+  "Tu salud es tu mejor inversión. 🧘",
+  "Cada pausa te hace más productivo. ⚡",
+  "¡Sigue así, dev imparable! 🚀",
+  "Código limpio, mente limpia. ✨",
+  "Respira hondo, el bug puede esperar. 🐛",
+  "¡Hoy es un gran día para codear! 🎉",
+];
+
+const CAT_IMAGES = [
+  "/gato sentado-02.png",
+  "/gato computador-02.png",
+  "/gato sobre el compu-14.png",
+  "/gato computador-02-02.png",
+];
+
+const SHOP_ITEMS = [
+  { id: 1, name: "Blizzy Coder", img: "/gato computador-02.png", price: 30 },
+  { id: 2, name: "Blizzy Zen", img: "/gato sentado-02.png", price: 50 },
+  { id: 3, name: "Blizzy Pro", img: "/gato sobre el compu-14.png", price: 80 },
+  { id: 4, name: "Blizzy Dark", img: "/gato computador-02-02.png", price: 100 },
+  { id: 5, name: "Huellitas", img: "/huellitas-03.png", price: 40 },
+  { id: 6, name: "Compu Gamer", img: "/computadora-17.png", price: 60 },
+  { id: 7, name: "Símbolo Místico", img: "/Símbolo-12-13.png", price: 90 },
+  { id: 8, name: "Símbolo Power", img: "/Símbolo-12-14.png", price: 120 },
+  { id: 9, name: "Galaxia 1", img: "/g1-02.png", price: 25 },
+  { id: 10, name: "Galaxia 2", img: "/g3-02.png", price: 25 },
+  { id: 11, name: "Galaxia 3", img: "/g4-02.png", price: 35 },
+  { id: 12, name: "Galaxia 4", img: "/g6-02.png", price: 35 },
+  { id: 13, name: "Avatar Gato 1", img: "/ga1-02.png", price: 45 },
+  { id: 14, name: "Avatar Gato 2", img: "/ga2-02.png", price: 45 },
+  { id: 15, name: "Avatar Gato 3", img: "/ga3-02.png", price: 55 },
+  { id: 16, name: "Avatar Gato 4", img: "/ga4-02.png", price: 55 },
+  { id: 17, name: "Avatar Gato 5", img: "/ga6-02.png", price: 70 },
+  { id: 18, name: "Avatar Gato 6", img: "/ga7-02.png", price: 70 },
+  { id: 19, name: "Avatar Gato 7", img: "/ga8-02.png", price: 85 },
+  { id: 20, name: "Avatar Gato 8", img: "/ga9-02.png", price: 85 },
+  { id: 21, name: "Huellas 1", img: "/h1-02.png", price: 20 },
+  { id: 22, name: "Huellas 2", img: "/h2-02.png", price: 20 },
+  { id: 23, name: "Huellas 3", img: "/h3-02.png", price: 30 },
+  { id: 24, name: "Huellas 4", img: "/h4-02.png", price: 30 },
+];
+
+const TIMER_OPTIONS = [5, 10, 15, 25, 30, 45];
+const DAYS = ["L", "M", "M", "J", "V", "S", "D"];
+
+const PROFILE_BG_COLORS = [
+  { id: "bg1", name: "Morado", color: "#7c3aed", price: 15 },
+  { id: "bg2", name: "Azul", color: "#3b82f6", price: 15 },
+  { id: "bg3", name: "Verde", color: "#10b981", price: 20 },
+  { id: "bg4", name: "Rosa", color: "#ec4899", price: 20 },
+  { id: "bg5", name: "Naranja", color: "#f59e0b", price: 25 },
+  { id: "bg6", name: "Rojo", color: "#ef4444", price: 25 },
+  { id: "bg7", name: "Cyan", color: "#06b6d4", price: 30 },
+  { id: "bg8", name: "Indigo", color: "#6366f1", price: 30 },
+];
+
+const THEME_COLORS = [
+  { id: "th1", name: "Noche Oscura", bg: "#0c0c1e", accent: "#7c3aed", price: 0 },
+  { id: "th2", name: "Océano", bg: "#0a192f", accent: "#64ffda", price: 40 },
+  { id: "th3", name: "Bosque", bg: "#0d1117", accent: "#34d399", price: 40 },
+  { id: "th4", name: "Atardecer", bg: "#1a0a2e", accent: "#f472b6", price: 50 },
+  { id: "th5", name: "Café", bg: "#1c1410", accent: "#d97706", price: 50 },
+  { id: "th6", name: "Nebula", bg: "#0f0720", accent: "#a78bfa", price: 60 },
+];
+
 export function Dashboard({
-  points,
-  missionsCompleted,
-  cameraActive,
-  cameraError,
-  connected,
-  state,
-  videoRef,
-  onStartCamera,
-  onStopCamera,
-  onStartPostura,
-  onStartPausa,
-  onStartPingPong,
-  onBackToLanding,
+  points, missionsCompleted, cameraActive, cameraError, connected, state, videoRef,
+  onStartCamera, onStopCamera, onStartPostura, onStartPausa, onStartPingPong, onStartPaint, onStartMemes, onBackToLanding,
+  onAddPoints, onAddMission,
 }: DashboardProps) {
-  const [activeTab, setActiveTab] = useState<"inicio" | "misiones">("inicio");
+  const [activeTab, setActiveTab] = useState<Tab>("inicio");
   const [timerSeconds, setTimerSeconds] = useState(25 * 60);
   const [timerRunning, setTimerRunning] = useState(false);
-  const [sessionMinutes] = useState(25);
+  const [sessionMinutes, setSessionMinutes] = useState(25);
+  const [showTimerPicker, setShowTimerPicker] = useState(false);
+  const [blizzyPhrase, setBlizzyPhrase] = useState(0);
+  const [blizzyPose, setBlizzyPose] = useState(0);
+  const [ownedAvatars, setOwnedAvatars] = useState<number[]>([]);
+  const [selectedAvatar, setSelectedAvatar] = useState("/gato sentado-02.png");
+  const [nickname, setNickname] = useState("Dev");
+  const [editingNick, setEditingNick] = useState(false);
+  const [nickInput, setNickInput] = useState("Dev");
+  const [coins, setCoins] = useState(points);
+  const [streakDays, setStreakDays] = useState([false, false, false, false, false, false, false]);
+  const [showReward, setShowReward] = useState<{ xp: number; coins: number; message: string } | null>(null);
+  const [levelUpReward, setLevelUpReward] = useState<string | null>(null);
+  const [profileBg, setProfileBg] = useState("#7c3aed");
+  const [ownedBgs, setOwnedBgs] = useState<string[]>(["bg1"]);
+  const [themeBg, setThemeBg] = useState("#0c0c1e");
+  const [themeAccent, setThemeAccent] = useState("#7c3aed");
+  const [ownedThemes, setOwnedThemes] = useState<string[]>(["th1"]);
   const intervalRef = useRef<number | null>(null);
   const displayVideoRef = useRef<HTMLVideoElement>(null);
 
-  // Assign camera stream to display video
+  const level = Math.floor(points / 100) + 1;
+  const levelName = level <= 2 ? "Dev Starter" : level <= 5 ? "Dev Mind" : level <= 8 ? "Dev Master" : "Dev Legend";
+  const xpForNext = 100 - (points % 100);
+  const xpProgress = (points % 100);
+
+  // Sync coins with points from parent
+  useEffect(() => {
+    setCoins((prev) => {
+      const diff = points - prev;
+      if (diff > 0) return prev + diff;
+      return prev;
+    });
+  }, [points]);
+
+  // Camera stream
   useEffect(() => {
     const video = displayVideoRef.current;
     const srcVideo = videoRef.current;
     if (video && srcVideo && srcVideo.srcObject) {
       const stream = srcVideo.srcObject as MediaStream;
-      if (video.srcObject !== stream) {
-        video.srcObject = stream;
-        video.play().catch(() => {});
-      }
+      if (video.srcObject !== stream) { video.srcObject = stream; video.play().catch(() => {}); }
     }
   });
+
+  // Blizzy rotation
+  useEffect(() => {
+    const t = setInterval(() => {
+      setBlizzyPhrase((p) => (p + 1) % PHRASES.length);
+      setBlizzyPose((p) => (p + 1) % CAT_IMAGES.length);
+    }, 7000);
+    return () => clearInterval(t);
+  }, []);
 
   // Timer
   useEffect(() => {
     if (timerRunning && timerSeconds > 0) {
-      intervalRef.current = window.setInterval(() => {
-        setTimerSeconds((s) => s - 1);
-      }, 1000);
-    } else if (timerSeconds === 0) {
+      intervalRef.current = window.setInterval(() => setTimerSeconds((s) => s - 1), 1000);
+    } else if (timerSeconds === 0 && timerRunning) {
       setTimerRunning(false);
+      completeTimer();
     }
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [timerRunning, timerSeconds]);
 
-  const toggleTimer = useCallback(() => {
-    if (timerRunning) {
-      setTimerRunning(false);
-    } else {
-      if (timerSeconds === 0) setTimerSeconds(sessionMinutes * 60);
-      setTimerRunning(true);
+  // Level up check
+  useEffect(() => {
+    const newLevel = Math.floor(points / 100) + 1;
+    if (newLevel > level && newLevel > 1) {
+      const reward = SHOP_ITEMS[Math.min(newLevel - 2, SHOP_ITEMS.length - 1)];
+      if (reward && !ownedAvatars.includes(reward.id)) {
+        setOwnedAvatars((o) => [...o, reward.id]);
+        setLevelUpReward(reward.name);
+        setTimeout(() => setLevelUpReward(null), 4000);
+      }
     }
+  }, [points]);
+
+  const completeTimer = () => {
+    const earned = sessionMinutes >= 25 ? 30 : sessionMinutes >= 15 ? 20 : 10;
+    setCoins((c) => c + earned);
+    onAddPoints(earned);
+    // Fill next streak day
+    setStreakDays((sd) => {
+      const next = [...sd];
+      const idx = next.indexOf(false);
+      if (idx !== -1) next[idx] = true;
+      return next;
+    });
+    setShowReward({ xp: earned, coins: earned, message: "¡Sesión completada!" });
+    setTimeout(() => setShowReward(null), 4000);
+  };
+
+  const toggleTimer = useCallback(() => {
+    if (timerRunning) { setTimerRunning(false); }
+    else { if (timerSeconds === 0) setTimerSeconds(sessionMinutes * 60); setTimerRunning(true); }
   }, [timerRunning, timerSeconds, sessionMinutes]);
 
+  const selectTime = (mins: number) => {
+    setSessionMinutes(mins);
+    setTimerSeconds(mins * 60);
+    setShowTimerPicker(false);
+    setTimerRunning(false);
+  };
+
   const formatTime = (secs: number) => {
-    const m = Math.floor(secs / 60);
-    const s = secs % 60;
+    const m = Math.floor(secs / 60); const s = secs % 60;
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
   const progress = 1 - timerSeconds / (sessionMinutes * 60);
   const circumference = 2 * Math.PI * 54;
   const strokeDashoffset = circumference * (1 - progress);
-  const level = Math.floor(points / 200) + 1;
-  const levelName = level <= 3 ? "Dev Starter" : level <= 6 ? "Dev Mind" : "Dev Master";
+
+  const buyItem = (id: number, price: number) => {
+    if (coins >= price && !ownedAvatars.includes(id)) {
+      setCoins((c) => c - price);
+      setOwnedAvatars((o) => [...o, id]);
+    }
+  };
+
+  const equipAvatar = (img: string) => setSelectedAvatar(img);
+
+  const saveNick = () => { setNickname(nickInput); setEditingNick(false); };
+
+  const buyBg = (id: string, price: number) => {
+    if (coins >= price && !ownedBgs.includes(id)) { setCoins((c) => c - price); setOwnedBgs((o) => [...o, id]); }
+  };
+  const buyTheme = (id: string, price: number) => {
+    if (coins >= price && !ownedThemes.includes(id)) { setCoins((c) => c - price); setOwnedThemes((o) => [...o, id]); }
+  };
 
   return (
-    <div className="dash">
+    <div className="dash" style={{ background: themeBg }}>
+      {/* Reward popup */}
+      {showReward && (
+        <div className="dash-reward-overlay">
+          <div className="dash-reward-card">
+            <img src="/gato sentado-02.png" alt="Blizzy" className="dash-reward__img" />
+            <h2>{showReward.message}</h2>
+            <div className="dash-reward__stats">
+              <span className="dash-reward__xp">+{showReward.xp} XP</span>
+              <span className="dash-reward__coins"><span className="material-symbols-rounded">monetization_on</span> +{showReward.coins}</span>
+            </div>
+            <p>¡Excelente trabajo! 🎉</p>
+          </div>
+        </div>
+      )}
+
+      {/* Level up popup */}
+      {levelUpReward && (
+        <div className="dash-levelup-toast">
+          <span className="material-symbols-rounded">celebration</span>
+          ¡Subiste de nivel! Desbloqueaste: {levelUpReward}
+        </div>
+      )}
+
       {/* Sidebar */}
       <aside className="dash-sidebar">
         <div className="dash-sidebar__logo">
@@ -94,19 +263,16 @@ export function Dashboard({
           <span>BreakPoint</span>
         </div>
         <nav className="dash-sidebar__nav">
-          <button className={`dash-sidebar__item ${activeTab === "inicio" ? "active" : ""}`} onClick={() => setActiveTab("inicio")}>
-            <span className="material-symbols-rounded">home</span> Inicio
-          </button>
-          <button className={`dash-sidebar__item ${activeTab === "misiones" ? "active" : ""}`} onClick={() => setActiveTab("misiones")}>
-            <span className="material-symbols-rounded">rocket_launch</span> Misiones
-          </button>
+          {([["inicio", "home", "Inicio"], ["misiones", "rocket_launch", "Misiones"], ["progreso", "person", "Perfil"], ["tienda", "storefront", "Tienda"], ["regalos", "redeem", "Regalos"], ["comunidad", "forum", "Comunidad"]] as const).map(([tab, icon, label]) => (
+            <button key={tab} className={`dash-sidebar__item ${activeTab === tab ? "active" : ""}`} onClick={() => setActiveTab(tab as Tab)}>
+              <span className="material-symbols-rounded">{icon}</span> {label}
+            </button>
+          ))}
         </nav>
-        <div className="dash-sidebar__user">
-          <div className="dash-sidebar__user-avatar">
-            <span className="material-symbols-rounded">pets</span>
-          </div>
+        <div className="dash-sidebar__user" onClick={() => setActiveTab("progreso")}>
+          <img src={selectedAvatar} alt="avatar" className="dash-sidebar__user-img" />
           <div className="dash-sidebar__user-info">
-            <span className="dash-sidebar__user-name">Blizzy</span>
+            <span className="dash-sidebar__user-name">{nickname}</span>
             <span className="dash-sidebar__user-level">Nivel {level}</span>
           </div>
         </div>
@@ -116,27 +282,111 @@ export function Dashboard({
       <main className="dash-main">
         <header className="dash-header">
           <div className="dash-header__greeting">
-            <h1>¡Hola, Dev! 👋</h1>
+            <h1>¡Hola, {nickname}! 👋</h1>
             <p>Estás haciendo un gran trabajo.</p>
           </div>
-          <div className="dash-header__streak">
-            <span className="material-symbols-rounded">local_fire_department</span>
-            Racha 🔥 7 días
+          <div className="dash-header__right">
+            <div className="dash-header__coins">
+              <span className="material-symbols-rounded">monetization_on</span> {coins}
+            </div>
+            <div className="dash-header__streak">
+              <span className="material-symbols-rounded">local_fire_department</span>
+              {streakDays.filter(Boolean).length} días
+            </div>
           </div>
         </header>
 
         <div className="dash-content">
-          {/* ===== TAB INICIO: Solo la imagen ===== */}
+
+          {/* ===== INICIO ===== */}
           {activeTab === "inicio" && (
             <div className="dash-inicio">
-              <img src="/tu-bienestar.png" alt="Tu bienestar, tu mejor código" className="dash-inicio__img" />
+              <div className="dash-inicio__top">
+                <div className="dash-card dash-blizzy-bot">
+                  <img src={CAT_IMAGES[blizzyPose]} alt="Blizzy" className="dash-blizzy-bot__img" />
+                  <div className="dash-blizzy-bot__bubble">
+                    <p key={blizzyPhrase}>{PHRASES[blizzyPhrase]}</p>
+                  </div>
+                </div>
+                <div className="dash-card dash-racha">
+                  <div className="dash-racha__header">
+                    <span className="material-symbols-rounded">local_fire_department</span>
+                    <h4>Racha</h4>
+                  </div>
+                  <div className="dash-racha__number">
+                    <span className="dash-racha__big">{streakDays.filter(Boolean).length}</span>
+                    <span className="dash-racha__label">días</span>
+                  </div>
+                  <div className="dash-racha__calendar">
+                    {DAYS.map((d, i) => (
+                      <div key={i} className={`dash-racha__cell ${streakDays[i] ? "active" : ""}`}>
+                        <span className="dash-racha__fire">{streakDays[i] ? "🔥" : "○"}</span>
+                        <span className="dash-racha__day-label">{d}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Timer */}
+              <div className="dash-card dash-timer-card">
+                <div className="dash-timer-card__left">
+                  <span className="dash-timer-card__label">Tiempo de enfoque</span>
+                  <div className="dash-timer-card__time-row">
+                    <span className="dash-timer-card__time">{formatTime(timerSeconds)}</span>
+                    <svg className="dash-timer-card__ring" viewBox="0 0 120 120">
+                      <circle cx="60" cy="60" r="54" fill="none" stroke="#1f1f3a" strokeWidth="8" />
+                      <circle cx="60" cy="60" r="54" fill="none" stroke={timerRunning ? "#7c3aed" : "#374151"} strokeWidth="8"
+                        strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={strokeDashoffset}
+                        transform="rotate(-90 60 60)" style={{ transition: "stroke-dashoffset 1s linear" }} />
+                    </svg>
+                  </div>
+                </div>
+                <div className="dash-timer-card__right">
+                  <div className="dash-timer-card__picker">
+                    <button className="dash-timer-card__picker-btn" onClick={() => setShowTimerPicker(!showTimerPicker)}>
+                      {sessionMinutes} min <span className="material-symbols-rounded">expand_more</span>
+                    </button>
+                    {showTimerPicker && (
+                      <div className="dash-timer-card__dropdown">
+                        {TIMER_OPTIONS.map((m) => (
+                          <button key={m} onClick={() => selectTime(m)} className={sessionMinutes === m ? "active" : ""}>{m} min</button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <button className={`dash-timer-card__start ${timerRunning ? "running" : ""}`} onClick={toggleTimer}>
+                    <span className="material-symbols-rounded">{timerRunning ? "pause" : "play_arrow"}</span>
+                    {timerRunning ? "Pausar" : "Iniciar"}
+                  </button>
+                  <span className="dash-timer-card__reward-hint">+{sessionMinutes >= 25 ? 30 : sessionMinutes >= 15 ? 20 : 10} XP al completar</span>
+                </div>
+              </div>
+
+              {/* Stats */}
+              <div className="dash-stats-row">
+                <div className="dash-card dash-stat">
+                  <div className="dash-stat__top"><span className="dash-stat__label">XP Total</span><span className="material-symbols-rounded dash-stat__icon dash-stat__icon--purple">star</span></div>
+                  <span className="dash-stat__value">{points.toLocaleString()}</span>
+                  <span className="dash-stat__sub">Nivel {level} • {levelName}</span>
+                </div>
+                <div className="dash-card dash-stat">
+                  <div className="dash-stat__top"><span className="dash-stat__label">Monedas</span><span className="material-symbols-rounded dash-stat__icon dash-stat__icon--gold">monetization_on</span></div>
+                  <span className="dash-stat__value">{coins}</span>
+                  <span className="dash-stat__sub">Para la tienda</span>
+                </div>
+                <div className="dash-card dash-stat">
+                  <div className="dash-stat__top"><span className="dash-stat__label">Misiones</span><span className="material-symbols-rounded dash-stat__icon dash-stat__icon--blue">target</span></div>
+                  <span className="dash-stat__value">{missionsCompleted}</span>
+                  <span className="dash-stat__sub">completadas</span>
+                </div>
+              </div>
             </div>
           )}
 
-          {/* ===== TAB MISIONES: Camera + Missions + Stats + Timer ===== */}
+          {/* ===== MISIONES ===== */}
           {activeTab === "misiones" && (
             <>
-              {/* Camera */}
               <div className="dash-card dash-camera-area">
                 {!cameraActive ? (
                   <div className="dash-camera-area__off">
@@ -163,8 +413,6 @@ export function Dashboard({
                   </div>
                 )}
               </div>
-
-              {/* Missions */}
               <div className="dash-missions-section">
                 <h3>Misiones disponibles</h3>
                 <div className="dash-missions-grid">
@@ -172,73 +420,236 @@ export function Dashboard({
                     <span className="material-symbols-rounded dash-mission__icon dash-mission__icon--green">visibility</span>
                     <h4>Monitor de Postura</h4>
                     <p>Detecta mala postura en tiempo real con IA</p>
-                    <span className="dash-mission__reward">+10 XP</span>
+                    <span className="dash-mission__reward">+10 XP • +10 monedas</span>
                   </button>
                   <button className="dash-card dash-mission" onClick={onStartPausa} disabled={!cameraActive}>
                     <span className="material-symbols-rounded dash-mission__icon dash-mission__icon--blue">self_improvement</span>
                     <h4>Pausa Activa</h4>
                     <p>Ejercicio guiado de giro de cuello</p>
-                    <span className="dash-mission__reward">+10 XP</span>
+                    <span className="dash-mission__reward">+15 XP • +15 monedas</span>
                   </button>
                   <button className="dash-card dash-mission" onClick={onStartPingPong} disabled={!cameraActive}>
                     <span className="material-symbols-rounded dash-mission__icon dash-mission__icon--orange">sports_tennis</span>
                     <h4>AR Ping Pong</h4>
                     <p>Juega ping pong con tus manos en AR</p>
-                    <span className="dash-mission__reward">+20 XP</span>
+                    <span className="dash-mission__reward">+20 XP • +20 monedas</span>
+                  </button>
+                  <button className="dash-card dash-mission" onClick={onStartPaint} disabled={!cameraActive}>
+                    <span className="material-symbols-rounded dash-mission__icon" style={{color:"#f472b6"}}>brush</span>
+                    <h4>AR Paint</h4>
+                    <p>Dibuja en el aire con detección de manos</p>
+                    <span className="dash-mission__reward">+15 XP • +15 monedas</span>
+                  </button>
+                  <button className="dash-card dash-mission" onClick={onStartMemes}>
+                    <span className="material-symbols-rounded dash-mission__icon" style={{color:"#fbbf24"}}>sentiment_very_satisfied</span>
+                    <h4>Memes de Blizzy</h4>
+                    <p>Crea memes con las poses del gato</p>
+                    <span className="dash-mission__reward">+10 XP • +10 monedas</span>
                   </button>
                 </div>
                 {!cameraActive && <p className="dash-missions-section__hint">Activa la cámara para comenzar una misión</p>}
               </div>
+            </>
+          )}
 
-              {/* Stats */}
-              <div className="dash-stats-row">
-                <div className="dash-card dash-stat">
-                  <div className="dash-stat__top">
-                    <span className="dash-stat__label">XP Total</span>
-                    <span className="material-symbols-rounded dash-stat__icon dash-stat__icon--purple">star</span>
-                  </div>
-                  <span className="dash-stat__value">{points.toLocaleString()}</span>
-                  <span className="dash-stat__sub">+{Math.min(points, 120)} XP hoy</span>
+          {/* ===== PROGRESO / PERFIL ===== */}
+          {activeTab === "progreso" && (
+            <div className="dash-progreso">
+              <div className="dash-card dash-profile">
+                <div className="dash-profile__avatar-wrap" style={{ background: profileBg }}>
+                  <img src={selectedAvatar} alt="Avatar" className="dash-profile__avatar" />
                 </div>
-                <div className="dash-card dash-stat">
-                  <div className="dash-stat__top">
-                    <span className="dash-stat__label">Nivel</span>
-                    <span className="material-symbols-rounded dash-stat__icon dash-stat__icon--green">trending_up</span>
+                <div className="dash-profile__info">
+                  {editingNick ? (
+                    <div className="dash-profile__edit-row">
+                      <input value={nickInput} onChange={(e) => setNickInput(e.target.value)} className="dash-profile__input" maxLength={16} />
+                      <button onClick={saveNick} className="dash-profile__save">✓</button>
+                    </div>
+                  ) : (
+                    <div className="dash-profile__name-row">
+                      <h3>{nickname}</h3>
+                      <button onClick={() => { setEditingNick(true); setNickInput(nickname); }} className="dash-profile__edit-btn">
+                        <span className="material-symbols-rounded">edit</span>
+                      </button>
+                    </div>
+                  )}
+                  <span className="dash-profile__level">Nivel {level} • {levelName}</span>
+                  <div className="dash-profile__xp-bar">
+                    <div className="dash-profile__xp-fill" style={{ width: `${xpProgress}%` }}></div>
                   </div>
-                  <span className="dash-stat__value">{level}</span>
-                  <span className="dash-stat__sub">{levelName}</span>
+                  <span className="dash-profile__xp-text">{xpProgress}/100 XP para nivel {level + 1}</span>
                 </div>
-                <div className="dash-card dash-stat">
-                  <div className="dash-stat__top">
-                    <span className="dash-stat__label">Misiones</span>
-                    <span className="material-symbols-rounded dash-stat__icon dash-stat__icon--blue">target</span>
-                  </div>
-                  <span className="dash-stat__value">{missionsCompleted}</span>
-                  <span className="dash-stat__sub">esta semana</span>
+              </div>
+              <div className="dash-progreso__grid">
+                <div className="dash-card dash-progreso__card"><span className="material-symbols-rounded">target</span><b>{missionsCompleted}</b><small>Misiones</small></div>
+                <div className="dash-card dash-progreso__card"><span className="material-symbols-rounded">star</span><b>{points}</b><small>XP Total</small></div>
+                <div className="dash-card dash-progreso__card"><span className="material-symbols-rounded">monetization_on</span><b>{coins}</b><small>Monedas</small></div>
+                <div className="dash-card dash-progreso__card"><span className="material-symbols-rounded">local_fire_department</span><b>{streakDays.filter(Boolean).length}</b><small>Racha</small></div>
+              </div>
+              <div className="dash-profile__avatars">
+                <h4>Mis avatares</h4>
+                <div className="dash-profile__avatars-grid">
+                  {SHOP_ITEMS.filter((it) => ownedAvatars.includes(it.id)).map((it) => (
+                    <img key={it.id} src={it.img} alt={it.name}
+                      className={`dash-profile__avatar-opt ${selectedAvatar === it.img ? "selected" : ""}`}
+                      onClick={() => equipAvatar(it.img)} />
+                  ))}
+                  {ownedAvatars.length === 0 && <p className="dash-profile__no-avatars">Compra avatares en la tienda</p>}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ===== TIENDA ===== */}
+          {activeTab === "tienda" && (
+            <div className="dash-tienda">
+              <div className="dash-tienda__header">
+                <h3><span className="material-symbols-rounded">storefront</span> Tienda</h3>
+                <div className="dash-tienda__coins">
+                  <span className="material-symbols-rounded">monetization_on</span> {coins} monedas
                 </div>
               </div>
 
-              {/* Timer */}
-              <div className="dash-card dash-timer-big">
-                <span className="dash-timer__label">Tiempo de enfoque</span>
-                <div className="dash-timer__display">
-                  <span className="dash-timer__time">{formatTime(timerSeconds)}</span>
-                  <svg className="dash-timer__ring" viewBox="0 0 120 120">
-                    <circle cx="60" cy="60" r="54" fill="none" stroke="#1f1f3a" strokeWidth="8" />
-                    <circle cx="60" cy="60" r="54" fill="none" stroke="#7c3aed" strokeWidth="8"
-                      strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={strokeDashoffset}
-                      transform="rotate(-90 60 60)" style={{ transition: "stroke-dashoffset 1s linear" }} />
-                  </svg>
+              {/* Colores de fondo de perfil */}
+              <div className="dash-tienda__section">
+                <h4><span className="material-symbols-rounded">palette</span> Fondo de perfil</h4>
+                <div className="dash-tienda__colors">
+                  {PROFILE_BG_COLORS.map((c) => (
+                    <div key={c.id} className={`dash-tienda__color-item ${ownedBgs.includes(c.id) ? "owned" : ""}`}>
+                      <div className="dash-tienda__color-swatch" style={{ background: c.color }} onClick={() => ownedBgs.includes(c.id) && setProfileBg(c.color)}>
+                        {profileBg === c.color && <span className="material-symbols-rounded">check</span>}
+                      </div>
+                      <span className="dash-tienda__color-name">{c.name}</span>
+                      {!ownedBgs.includes(c.id) && (
+                        <button className="dash-tienda__color-buy" onClick={() => buyBg(c.id, c.price)} disabled={coins < c.price}>
+                          <span className="material-symbols-rounded">monetization_on</span>{c.price}
+                        </button>
+                      )}
+                    </div>
+                  ))}
                 </div>
-                <div className="dash-timer__controls">
-                  <span className="dash-timer__session">Sesión de {sessionMinutes} min</span>
-                  <button className="dash-timer__btn" onClick={toggleTimer}>
-                    {timerRunning ? "Pausar sesión" : "Iniciar sesión"}
+              </div>
+
+              {/* Temas de página */}
+              <div className="dash-tienda__section">
+                <h4><span className="material-symbols-rounded">dark_mode</span> Tema de la página</h4>
+                <div className="dash-tienda__themes">
+                  {THEME_COLORS.map((t) => (
+                    <div key={t.id} className={`dash-card dash-tienda__theme ${ownedThemes.includes(t.id) ? "owned" : ""} ${themeBg === t.bg ? "active-theme" : ""}`}>
+                      <div className="dash-tienda__theme-preview" style={{ background: t.bg, borderColor: t.accent }}>
+                        <div className="dash-tienda__theme-accent" style={{ background: t.accent }}></div>
+                      </div>
+                      <span>{t.name}</span>
+                      {ownedThemes.includes(t.id) ? (
+                        <button className="dash-tienda__btn dash-tienda__btn--owned" onClick={() => { setThemeBg(t.bg); setThemeAccent(t.accent); }}>
+                          {themeBg === t.bg ? "✓ Activo" : "Usar"}
+                        </button>
+                      ) : (
+                        <button className="dash-tienda__btn" onClick={() => buyTheme(t.id, t.price)} disabled={coins < t.price}>
+                          <span className="material-symbols-rounded">monetization_on</span> {t.price}
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Avatares */}
+              <div className="dash-tienda__section">
+                <h4><span className="material-symbols-rounded">face</span> Avatares</h4>
+                <div className="dash-tienda__grid">
+                  {SHOP_ITEMS.map((item) => (
+                    <div key={item.id} className={`dash-card dash-tienda__item ${ownedAvatars.includes(item.id) ? "owned" : ""}`}>
+                      <img src={item.img} alt={item.name} className="dash-tienda__item-img" />
+                      <h4>{item.name}</h4>
+                      {ownedAvatars.includes(item.id) ? (
+                        <button className="dash-tienda__btn dash-tienda__btn--owned" onClick={() => equipAvatar(item.img)}>
+                          {selectedAvatar === item.img ? "✓ Equipado" : "Usar"}
+                        </button>
+                      ) : (
+                        <button className="dash-tienda__btn" onClick={() => buyItem(item.id, item.price)} disabled={coins < item.price}>
+                          <span className="material-symbols-rounded">monetization_on</span> {item.price}
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ===== REGALOS ===== */}
+          {activeTab === "regalos" && (
+            <div className="dash-regalos">
+              <h3><span className="material-symbols-rounded">redeem</span> Regalos y Bonificaciones</h3>
+              <div className="dash-regalos__grid">
+                <div className="dash-card dash-regalos__qr">
+                  <span className="material-symbols-rounded dash-regalos__qr-icon">qr_code_2</span>
+                  <h4>Escanea el QR</h4>
+                  <p>Accede a contenido exclusivo y aprende más sobre Ctrl+Rest</p>
+                  <div className="dash-regalos__qr-code">
+                    <span className="material-symbols-rounded">qr_code</span>
+                  </div>
+                  <span className="dash-regalos__qr-hint">ctrl-rest.dev/info</span>
+                </div>
+                <div className="dash-card dash-regalos__social">
+                  <h4><span className="material-symbols-rounded">group_add</span> Síguenos y gana 50 monedas</h4>
+                  <p>Sigue nuestros perfiles, toma una captura y gana monedas</p>
+                  <div className="dash-regalos__profiles">
+                    <div className="dash-regalos__profile-item">
+                      <span className="material-symbols-rounded">person</span>
+                      <span>@valentina_dev</span>
+                    </div>
+                    <div className="dash-regalos__profile-item">
+                      <span className="material-symbols-rounded">person</span>
+                      <span>@maria_frontend</span>
+                    </div>
+                    <div className="dash-regalos__profile-item">
+                      <span className="material-symbols-rounded">person</span>
+                      <span>@laura_backend</span>
+                    </div>
+                    <div className="dash-regalos__profile-item">
+                      <span className="material-symbols-rounded">person</span>
+                      <span>@sofia_devops</span>
+                    </div>
+                  </div>
+                  <button className="dash-regalos__claim" onClick={() => { setCoins((c) => c + 50); onAddPoints(50); setShowReward({ xp: 50, coins: 50, message: "¡Regalos reclamados!" }); setTimeout(() => setShowReward(null), 4000); }}>
+                    <span className="material-symbols-rounded">redeem</span> Reclamar 50 monedas
                   </button>
                 </div>
               </div>
-            </>
+            </div>
           )}
+
+          {/* ===== COMUNIDAD ===== */}
+          {activeTab === "comunidad" && (
+            <div className="dash-comunidad">
+              <h3><span className="material-symbols-rounded">forum</span> Comunidad</h3>
+              <p className="dash-comunidad__desc">Deja tu opinión, comparte tu experiencia o sugiere mejoras</p>
+              <div className="dash-card dash-comunidad__form">
+                <textarea className="dash-comunidad__textarea" placeholder="Escribe tu mensaje aquí... ¿Qué te pareció la plataforma? ¿Qué mejorarías?" rows={4}></textarea>
+                <button className="dash-comunidad__send">
+                  <span className="material-symbols-rounded">send</span> Enviar opinión
+                </button>
+              </div>
+              <div className="dash-comunidad__messages">
+                <h4>Opiniones recientes</h4>
+                <div className="dash-card dash-comunidad__msg">
+                  <div className="dash-comunidad__msg-header"><img src="/ga1-02.png" alt="" className="dash-comunidad__msg-avatar" /><span>DevCat99</span><small>Hace 2h</small></div>
+                  <p>¡Me encanta la idea de las pausas activas! El ping pong AR es genial 🏓</p>
+                </div>
+                <div className="dash-card dash-comunidad__msg">
+                  <div className="dash-comunidad__msg-header"><img src="/ga3-02.png" alt="" className="dash-comunidad__msg-avatar" /><span>CodeZen</span><small>Hace 5h</small></div>
+                  <p>La detección de postura me ayudó mucho, ya no me encorvo tanto 🧘</p>
+                </div>
+                <div className="dash-card dash-comunidad__msg">
+                  <div className="dash-comunidad__msg-header"><img src="/ga6-02.png" alt="" className="dash-comunidad__msg-avatar" /><span>NightOwl</span><small>Hace 1d</small></div>
+                  <p>Las monedas y la tienda motivan mucho a seguir tomando pausas 💜</p>
+                </div>
+              </div>
+            </div>
+          )}
+
         </div>
       </main>
     </div>
