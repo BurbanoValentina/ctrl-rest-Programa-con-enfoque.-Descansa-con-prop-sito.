@@ -10,13 +10,22 @@ import {
   CognitoUserSession,
 } from "amazon-cognito-identity-js";
 
-const POOL_ID = import.meta.env.VITE_COGNITO_USER_POOL_ID;
-const CLIENT_ID = import.meta.env.VITE_COGNITO_CLIENT_ID;
+const POOL_ID = import.meta.env.VITE_COGNITO_USER_POOL_ID || "";
+const CLIENT_ID = import.meta.env.VITE_COGNITO_CLIENT_ID || "";
 
-const userPool = new CognitoUserPool({
-  UserPoolId: POOL_ID,
-  ClientId: CLIENT_ID,
-});
+let userPool: CognitoUserPool;
+try {
+  userPool = new CognitoUserPool({
+    UserPoolId: POOL_ID,
+    ClientId: CLIENT_ID,
+  });
+} catch {
+  // Si Cognito no está configurado, crear un pool dummy que no crashee la app
+  userPool = new CognitoUserPool({
+    UserPoolId: "us-east-1_PLACEHOLDER",
+    ClientId: "placeholder",
+  });
+}
 
 export interface AuthUser {
   name: string;
