@@ -112,7 +112,7 @@ export function Dashboard({
   const [nickname, setNickname] = useState(userName);
   const [editingNick, setEditingNick] = useState(false);
   const [nickInput, setNickInput] = useState("Dev");
-  const [coins, setCoins] = useState(points);
+  const [coins, setCoins] = useState(0);
   const [streakDays, setStreakDays] = useState([false, false, false, false, false, false, false]);
   const [showReward, setShowReward] = useState<{ xp: number; coins: number; message: string } | null>(null);
   const [levelUpReward, setLevelUpReward] = useState<string | null>(null);
@@ -148,14 +148,8 @@ export function Dashboard({
     }).catch(() => {});
   }, []);
 
-  // Sync coins with points from parent
+  // Fill streak when missions are completed
   useEffect(() => {
-    setCoins((prev) => {
-      const diff = points - prev;
-      if (diff > 0) return prev + diff;
-      return prev;
-    });
-    // Fill streak when missions are completed
     if (missionsCompleted > 0) {
       setStreakDays((sd) => {
         const filled = sd.filter(Boolean).length;
@@ -168,6 +162,20 @@ export function Dashboard({
       });
     }
   }, [points, missionsCompleted]);
+
+  // Cuando se ganan puntos por misiones, también sumar monedas y persistir
+  const prevPointsRef = useRef(points);
+  useEffect(() => {
+    const diff = points - prevPointsRef.current;
+    if (diff > 0) {
+      setCoins((c) => {
+        const newCoins = c + diff;
+        actualizarPerfil({ monedas: newCoins }).catch(() => {});
+        return newCoins;
+      });
+    }
+    prevPointsRef.current = points;
+  }, [points]);
 
   // Camera stream
   useEffect(() => {
@@ -214,8 +222,10 @@ export function Dashboard({
 
   const completeTimer = () => {
     const earned = sessionMinutes >= 25 ? 30 : sessionMinutes >= 15 ? 20 : 10;
-    setCoins((c) => c + earned);
+    const newCoins = coins + earned;
+    setCoins(newCoins);
     onAddPoints(earned);
+    actualizarPerfil({ monedas: newCoins }).catch(() => {});
     // Fill next streak day
     setStreakDays((sd) => {
       const next = [...sd];
