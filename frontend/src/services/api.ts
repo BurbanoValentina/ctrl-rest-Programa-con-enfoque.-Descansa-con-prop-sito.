@@ -39,6 +39,8 @@ export interface UserProfile {
   nivel: number;
   nickname: string;
   avatar: string;
+  tema: string;
+  fondoPerfil: string;
   misionesCompletadas: number;
   ultimaPausa: string | null;
   itemsComprados: string[];
