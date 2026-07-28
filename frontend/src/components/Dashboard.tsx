@@ -337,7 +337,7 @@ export function Dashboard({
         </div>
         <nav className="dash-sidebar__nav">
           {([["inicio", "home", "Inicio"], ["misiones", "rocket_launch", "Misiones"], ["progreso", "person", "Perfil"], ["tienda", "storefront", "Tienda"], ["regalos", "redeem", "Regalos"], ["comunidad", "forum", "Comunidad"], ["relax", "spa", "Relax"]] as const).map(([tab, icon, label]) => (
-            <button key={tab} className={`dash-sidebar__item ${activeTab === tab ? "active" : ""}`} onClick={() => setActiveTab(tab as Tab)}>
+            <button key={tab} className={`dash-sidebar__item ${activeTab === tab ? "active" : ""}`} onClick={() => { if (activeTab === "misiones" && tab !== "misiones" && cameraActive) { onStopCamera(); } setActiveTab(tab as Tab); }}>
               <span className="material-symbols-rounded">{icon}</span> {label}
             </button>
           ))}
