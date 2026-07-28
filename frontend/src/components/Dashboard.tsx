@@ -263,8 +263,6 @@ export function Dashboard({
       actualizarPerfil({ monedas: newCoins, itemsComprados: allItems }).catch(() => {});
     }
   };
-    }
-  };
 
   const equipAvatar = (img: string) => {
     setSelectedAvatar(img);
