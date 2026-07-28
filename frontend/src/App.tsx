@@ -33,6 +33,7 @@ function App() {
 
   const [screen, setScreen] = useState<AppScreen>("landing");
   const [points, setPoints] = useState(0);
+  const [coins, setCoins] = useState(0);
   const [missionsCompleted, setMissionsCompleted] = useState(0);
   const [lastReward, setLastReward] = useState<string | null>(null);
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -47,6 +48,7 @@ function App() {
         // Cargar perfil del backend
         getPerfil().then((perfil) => {
           setPoints(perfil.puntos || 0);
+          setCoins(perfil.monedas || 0);
           setMissionsCompleted(perfil.misionesCompletadas || 0);
         }).catch(() => {
           // Si falla la API, seguimos con datos locales
@@ -96,6 +98,11 @@ function App() {
       actualizarPerfil({ puntos: newPts }).catch(() => {});
       return newPts;
     });
+    setCoins((c) => {
+      const newCoins = c + earned;
+      actualizarPerfil({ monedas: newCoins }).catch(() => {});
+      return newCoins;
+    });
     setMissionsCompleted((m) => m + 1);
     setLastReward("+15 XP • +15 monedas 🎉");
     stopExercise();
@@ -112,6 +119,11 @@ function App() {
       const newPts = p + earned;
       actualizarPerfil({ puntos: newPts }).catch(() => {});
       return newPts;
+    });
+    setCoins((c) => {
+      const newCoins = c + earned;
+      actualizarPerfil({ monedas: newCoins }).catch(() => {});
+      return newCoins;
     });
     setMissionsCompleted((m) => m + 1);
     setLastReward(`+${earned} XP • +${earned} monedas 🏓`);
@@ -156,6 +168,7 @@ function App() {
       {screen === "home" && (
         <Dashboard
           points={points}
+          coins={coins}
           missionsCompleted={missionsCompleted}
           cameraActive={cameraActive}
           cameraError={cameraError}
@@ -171,9 +184,10 @@ function App() {
           onStartMemes={goToMemes}
           onStartStretch={goToStretch}
           onBackToLanding={goToLanding}
-          onLogout={() => { signOut(); setUser(null); setPoints(0); setMissionsCompleted(0); setScreen("landing"); }}
+          onLogout={() => { signOut(); setUser(null); setPoints(0); setCoins(0); setMissionsCompleted(0); setScreen("landing"); }}
           onAddPoints={(pts: number) => setPoints((p) => p + pts)}
           onAddMission={() => setMissionsCompleted((m) => m + 1)}
+          onAddCoins={(c: number) => setCoins((prev) => prev + c)}
           userName={user?.name || "Dev"}
         />
       )}
@@ -269,6 +283,11 @@ function App() {
               actualizarPerfil({ puntos: newPts }).catch(() => {});
               return newPts;
             });
+            setCoins((c) => {
+              const newCoins = c + 15;
+              actualizarPerfil({ monedas: newCoins }).catch(() => {});
+              return newCoins;
+            });
             setMissionsCompleted((m) => m + 1);
             setScreen("home");
           }}
@@ -289,6 +308,11 @@ function App() {
               actualizarPerfil({ puntos: newPts }).catch(() => {});
               return newPts;
             });
+            setCoins((c) => {
+              const newCoins = c + 10;
+              actualizarPerfil({ monedas: newCoins }).catch(() => {});
+              return newCoins;
+            });
             setMissionsCompleted((m) => m + 1);
             setScreen("home");
           }}
@@ -308,6 +332,11 @@ function App() {
               const newPts = p + 20;
               actualizarPerfil({ puntos: newPts }).catch(() => {});
               return newPts;
+            });
+            setCoins((c) => {
+              const newCoins = c + 20;
+              actualizarPerfil({ monedas: newCoins }).catch(() => {});
+              return newCoins;
             });
             setMissionsCompleted((m) => m + 1);
             stopExercise();
