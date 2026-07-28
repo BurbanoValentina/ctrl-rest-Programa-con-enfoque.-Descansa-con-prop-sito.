@@ -98,7 +98,7 @@ function App() {
     setScreen("home");
     setTimeout(() => setLastReward(null), 3000);
     // Persistir en backend
-    completarPausa({ tipo: "pausa_activa", puntosGanados: earned, monedasGanadas: earned }).catch(() => {});
+    completarPausa({ tipo: "movimiento", actividad: "giro-cuello", duracionSegundos: 60 }).catch(() => {});
   }, [stopExercise]);
 
   const handlePausaBack = useCallback(() => { stopExercise(); setScreen("home"); }, [stopExercise]);
@@ -112,7 +112,7 @@ function App() {
     setTimeout(() => setLastReward(null), 3000);
     setScreen("home");
     // Persistir en backend
-    completarPausa({ tipo: "pingpong", puntosGanados: earned, monedasGanadas: earned }).catch(() => {});
+    completarPausa({ tipo: "diversion", actividad: "ping-pong", duracionSegundos: 120 }).catch(() => {});
   }, [stopPingPong, state.game]);
 
   const goToApp = useCallback(() => setScreen("auth"), []);
@@ -263,7 +263,7 @@ function App() {
             setPoints((p) => p + 15);
             setMissionsCompleted((m) => m + 1);
             setScreen("home");
-            completarPausa({ tipo: "ar_paint", puntosGanados: 15, monedasGanadas: 15 }).catch(() => {});
+            completarPausa({ tipo: "diversion", actividad: "ar-paint", duracionSegundos: 90 }).catch(() => {});
           }}
         />
       )}
@@ -280,7 +280,7 @@ function App() {
             setPoints((p) => p + 10);
             setMissionsCompleted((m) => m + 1);
             setScreen("home");
-            completarPausa({ tipo: "memes", puntosGanados: 10, monedasGanadas: 10 }).catch(() => {});
+            completarPausa({ tipo: "diversion", actividad: "memes", duracionSegundos: 60 }).catch(() => {});
           }}
         />
       )}
@@ -298,7 +298,7 @@ function App() {
             setMissionsCompleted((m) => m + 1);
             stopExercise();
             setScreen("home");
-            completarPausa({ tipo: "stretch", puntosGanados: 20, monedasGanadas: 20 }).catch(() => {});
+            completarPausa({ tipo: "movimiento", actividad: "estiramiento", duracionSegundos: 90 }).catch(() => {});
           }}
           onBack={() => { stopExercise(); setScreen("home"); }}
         />
