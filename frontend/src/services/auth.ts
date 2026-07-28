@@ -136,18 +136,39 @@ export function getIdToken(): Promise<string | null> {
   return new Promise((resolve) => {
     const user = userPool.getCurrentUser();
     if (!user) {
-      resolve(null);
+      // Fallback: leer directamente de localStorage
+      const token = getIdTokenFromStorage();
+      resolve(token);
       return;
     }
 
     user.getSession((err: Error | null, session: CognitoUserSession | null) => {
       if (err || !session || !session.isValid()) {
-        resolve(null);
+        // Fallback: leer directamente de localStorage
+        const token = getIdTokenFromStorage();
+        resolve(token);
         return;
       }
       resolve(session.getIdToken().getJwtToken());
     });
   });
+}
+
+/**
+ * Fallback: leer el idToken directamente de localStorage
+ * Cognito SDK guarda los tokens con un key predecible
+ */
+function getIdTokenFromStorage(): string | null {
+  const clientId = CLIENT_ID;
+  const lastAuthUser = localStorage.getItem(
+    `CognitoIdentityServiceProvider.${clientId}.LastAuthUser`
+  );
+  if (!lastAuthUser) return null;
+
+  const token = localStorage.getItem(
+    `CognitoIdentityServiceProvider.${clientId}.${lastAuthUser}.idToken`
+  );
+  return token || null;
 }
 
 /**
@@ -167,17 +188,13 @@ export function getCurrentUser(): Promise<AuthUser | null> {
         return;
       }
 
-      user.getUserAttributes((attrErr, attributes) => {
-        if (attrErr || !attributes) {
-          resolve(null);
-          return;
-        }
-
-        const email = attributes.find((a) => a.Name === "email")?.Value || "";
-        const name = attributes.find((a) => a.Name === "name")?.Value || "";
-        const sub = attributes.find((a) => a.Name === "sub")?.Value || "";
-
-        resolve({ name, email, sub });
+      // Decodificar el idToken para obtener los datos del usuario
+      const idToken = session.getIdToken();
+      const payload = idToken.decodePayload();
+      resolve({
+        name: payload["name"] || "",
+        email: payload["email"] || "",
+        sub: payload["sub"] || "",
       });
     });
   });
