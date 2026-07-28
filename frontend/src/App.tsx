@@ -8,6 +8,9 @@ import { LandingPage } from "./components/LandingPage";
 import { AuthScreen } from "./components/AuthScreen";
 import { Dashboard } from "./components/Dashboard";
 import { usePostureSensor } from "./hooks/usePostureSensor";
+import { getCurrentUser, signOut } from "./services/auth";
+import { getPerfil, completarPausa } from "./services/api";
+import type { AuthUser } from "./services/auth";
 import "./App.css";
 
 type AppScreen = "landing" | "auth" | "home" | "postura" | "pausa" | "pingpong" | "paint" | "memes" | "stretch";
@@ -32,8 +35,26 @@ function App() {
   const [points, setPoints] = useState(0);
   const [missionsCompleted, setMissionsCompleted] = useState(0);
   const [lastReward, setLastReward] = useState<string | null>(null);
-  const [user, setUser] = useState<{ name: string; email: string } | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const displayVideoRef = useRef<HTMLVideoElement>(null);
+
+  // Verificar si hay sesión activa al cargar la app
+  useEffect(() => {
+    getCurrentUser().then((u) => {
+      if (u) {
+        setUser(u);
+        setScreen("home");
+        // Cargar perfil del backend
+        getPerfil().then((perfil) => {
+          setPoints(perfil.puntos || 0);
+          setMissionsCompleted(perfil.misionesCompletadas || 0);
+        }).catch(() => {
+          // Si falla la API, seguimos con datos locales
+          console.warn("No se pudo cargar el perfil del servidor");
+        });
+      }
+    });
+  }, []);
 
   const currentStream = videoRef.current?.srcObject as MediaStream | null;
 
@@ -69,12 +90,15 @@ function App() {
   const forcePausa = useCallback(() => { setScreen("pausa"); startExercise(); }, [startExercise]);
 
   const handlePausaCompleted = useCallback(() => {
-    setPoints((p) => p + 15);
+    const earned = 15;
+    setPoints((p) => p + earned);
     setMissionsCompleted((m) => m + 1);
     setLastReward("+15 XP • +15 monedas 🎉");
     stopExercise();
     setScreen("home");
     setTimeout(() => setLastReward(null), 3000);
+    // Persistir en backend
+    completarPausa({ tipo: "pausa_activa", puntosGanados: earned, monedasGanadas: earned }).catch(() => {});
   }, [stopExercise]);
 
   const handlePausaBack = useCallback(() => { stopExercise(); setScreen("home"); }, [stopExercise]);
@@ -87,13 +111,22 @@ function App() {
     setLastReward(`+${earned} XP • +${earned} monedas 🏓`);
     setTimeout(() => setLastReward(null), 3000);
     setScreen("home");
+    // Persistir en backend
+    completarPausa({ tipo: "pingpong", puntosGanados: earned, monedasGanadas: earned }).catch(() => {});
   }, [stopPingPong, state.game]);
 
   const goToApp = useCallback(() => setScreen("auth"), []);
   const goToLanding = useCallback(() => setScreen("landing"), []);
-  const handleLogin = useCallback((u: { name: string; email: string }) => {
+  const handleLogin = useCallback((u: AuthUser) => {
     setUser(u);
     setScreen("home");
+    // Cargar perfil del backend después del login
+    getPerfil().then((perfil) => {
+      setPoints(perfil.puntos || 0);
+      setMissionsCompleted(perfil.misionesCompletadas || 0);
+    }).catch(() => {
+      console.warn("No se pudo cargar el perfil del servidor");
+    });
   }, []);
 
   return (
@@ -134,7 +167,7 @@ function App() {
           onStartMemes={goToMemes}
           onStartStretch={goToStretch}
           onBackToLanding={goToLanding}
-          onLogout={() => { setUser(null); setScreen("landing"); }}
+          onLogout={() => { signOut(); setUser(null); setPoints(0); setMissionsCompleted(0); setScreen("landing"); }}
           onAddPoints={(pts: number) => setPoints((p) => p + pts)}
           onAddMission={() => setMissionsCompleted((m) => m + 1)}
           userName={user?.name || "Dev"}
@@ -225,7 +258,13 @@ function App() {
           game={state.game}
           connected={connected}
           stream={currentStream}
-          onBack={() => { stopPingPong(); setPoints((p) => p + 15); setMissionsCompleted((m) => m + 1); setScreen("home"); }}
+          onBack={() => {
+            stopPingPong();
+            setPoints((p) => p + 15);
+            setMissionsCompleted((m) => m + 1);
+            setScreen("home");
+            completarPausa({ tipo: "ar_paint", puntosGanados: 15, monedasGanadas: 15 }).catch(() => {});
+          }}
         />
       )}
 
@@ -237,7 +276,12 @@ function App() {
           srcVideoRef={videoRef}
           state={state}
           landmarks={state.landmarks}
-          onBack={() => { setPoints((p) => p + 10); setMissionsCompleted((m) => m + 1); setScreen("home"); }}
+          onBack={() => {
+            setPoints((p) => p + 10);
+            setMissionsCompleted((m) => m + 1);
+            setScreen("home");
+            completarPausa({ tipo: "memes", puntosGanados: 10, monedasGanadas: 10 }).catch(() => {});
+          }}
         />
       )}
 
@@ -249,7 +293,13 @@ function App() {
           connected={connected}
           stream={currentStream}
           srcVideoRef={videoRef}
-          onCompleted={() => { setPoints((p) => p + 20); setMissionsCompleted((m) => m + 1); stopExercise(); setScreen("home"); }}
+          onCompleted={() => {
+            setPoints((p) => p + 20);
+            setMissionsCompleted((m) => m + 1);
+            stopExercise();
+            setScreen("home");
+            completarPausa({ tipo: "stretch", puntosGanados: 20, monedasGanadas: 20 }).catch(() => {});
+          }}
           onBack={() => { stopExercise(); setScreen("home"); }}
         />
       )}

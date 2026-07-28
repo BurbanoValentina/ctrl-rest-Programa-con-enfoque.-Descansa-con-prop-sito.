@@ -36,3 +36,14 @@
 .auth__submit { display:flex; align-items:center; justify-content:center; gap:0.5rem; padding:0.9rem; background:linear-gradient(135deg,#7c3aed,#6366f1); color:#fff; border:none; border-radius:12px; font-size:1rem; font-weight:700; cursor:pointer; transition:all 0.2s; font-family:'Inter',sans-serif; margin-top:0.5rem; }
 .auth__submit:hover { box-shadow:0 6px 24px rgba(124,58,237,0.4); transform:translateY(-1px); }
 .auth__submit .material-symbols-rounded { font-size:1.2rem; }
+
+
+.auth__message { color:#34d399; font-size:0.82rem; font-weight:500; background:rgba(52,211,153,0.08); padding:0.6rem 1rem; border-radius:8px; border:1px solid rgba(52,211,153,0.2); }
+
+.auth__resend { background:none; border:none; color:#7c3aed; font-size:0.82rem; cursor:pointer; text-decoration:underline; text-align:left; padding:0; font-family:'Inter',sans-serif; }
+.auth__resend:hover { color:#a78bfa; }
+
+.auth__back-link { background:none; border:none; color:#9ca3af; font-size:0.85rem; cursor:pointer; text-align:center; padding:0.5rem; font-family:'Inter',sans-serif; }
+.auth__back-link:hover { color:#fff; }
+
+.auth__submit:disabled { opacity:0.6; cursor:not-allowed; transform:none; box-shadow:none; }
