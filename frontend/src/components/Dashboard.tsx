@@ -4,6 +4,7 @@ import "./Dashboard.css";
 
 interface DashboardProps {
   points: number;
+  coins: number;
   missionsCompleted: number;
   cameraActive: boolean;
   cameraError: string | null;
@@ -22,6 +23,7 @@ interface DashboardProps {
   onLogout: () => void;
   onAddPoints: (pts: number) => void;
   onAddMission: () => void;
+  onAddCoins: (c: number) => void;
   userName: string;
 }
 
@@ -96,9 +98,9 @@ const THEME_COLORS = [
 ];
 
 export function Dashboard({
-  points, missionsCompleted, cameraActive, cameraError, connected, state, videoRef,
+  points, coins: coinsProp, missionsCompleted, cameraActive, cameraError, connected, state, videoRef,
   onStartCamera, onStopCamera, onStartPostura, onStartPausa, onStartPingPong, onStartPaint, onStartMemes, onStartStretch, onBackToLanding, onLogout,
-  onAddPoints, onAddMission, userName,
+  onAddPoints, onAddMission, onAddCoins, userName,
 }: DashboardProps) {
   const [activeTab, setActiveTab] = useState<Tab>("inicio");
   const [timerSeconds, setTimerSeconds] = useState(25 * 60);
@@ -112,7 +114,7 @@ export function Dashboard({
   const [nickname, setNickname] = useState(userName);
   const [editingNick, setEditingNick] = useState(false);
   const [nickInput, setNickInput] = useState("Dev");
-  const [coins, setCoins] = useState(0);
+  const [coins, setCoins] = useState(coinsProp);
   const [streakDays, setStreakDays] = useState([false, false, false, false, false, false, false]);
   const [showReward, setShowReward] = useState<{ xp: number; coins: number; message: string } | null>(null);
   const [levelUpReward, setLevelUpReward] = useState<string | null>(null);
@@ -135,10 +137,14 @@ export function Dashboard({
   const xpForNext = 100 - (points % 100);
   const xpProgress = (points % 100);
 
+  // Sincronizar monedas cuando cambian desde App (misiones)
+  useEffect(() => {
+    setCoins(coinsProp);
+  }, [coinsProp]);
+
   // Cargar datos guardados del perfil al montar
   useEffect(() => {
     getPerfil().then((perfil) => {
-      if (perfil.monedas !== undefined) setCoins(perfil.monedas);
       if (perfil.itemsComprados) setOwnedAvatars(perfil.itemsComprados.filter((i: string) => i.startsWith("av_")).map((i: string) => parseInt(i.replace("av_", ""))));
       if (perfil.itemsComprados) setOwnedBgs(perfil.itemsComprados.filter((i: string) => i.startsWith("bg")) || ["bg1"]);
       if (perfil.itemsComprados) setOwnedThemes(perfil.itemsComprados.filter((i: string) => i.startsWith("th")) || ["th1"]);
@@ -162,20 +168,6 @@ export function Dashboard({
       });
     }
   }, [points, missionsCompleted]);
-
-  // Cuando se ganan puntos por misiones, también sumar monedas y persistir
-  const prevPointsRef = useRef(points);
-  useEffect(() => {
-    const diff = points - prevPointsRef.current;
-    if (diff > 0) {
-      setCoins((c) => {
-        const newCoins = c + diff;
-        actualizarPerfil({ monedas: newCoins }).catch(() => {});
-        return newCoins;
-      });
-    }
-    prevPointsRef.current = points;
-  }, [points]);
 
   // Camera stream
   useEffect(() => {
