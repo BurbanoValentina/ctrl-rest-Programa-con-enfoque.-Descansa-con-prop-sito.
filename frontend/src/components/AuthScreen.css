@@ -47,3 +47,10 @@
 .auth__back-link:hover { color:#fff; }
 
 .auth__submit:disabled { opacity:0.6; cursor:not-allowed; transform:none; box-shadow:none; }
+
+
+.auth__password-rules { list-style:none; padding:0; margin:0.4rem 0 0 0; display:flex; flex-direction:column; gap:0.2rem; }
+.auth__password-rules li { font-size:0.72rem; color:#6b7280; display:flex; align-items:center; gap:0.3rem; transition:color 0.2s; }
+.auth__password-rules li::before { content:"○"; font-size:0.6rem; }
+.auth__password-rules li.valid { color:#34d399; }
+.auth__password-rules li.valid::before { content:"●"; }
