@@ -116,6 +116,7 @@ export async function completarPausa(data: {
  * PUT /usuario/perfil - Actualizar perfil del usuario (monedas, items, avatar, tema, etc.)
  */
 export async function actualizarPerfil(data: {
+  puntos?: number;
   monedas?: number;
   itemsComprados?: string[];
   avatar?: string;
