@@ -24,6 +24,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
           <a className="lp-nav__link" onClick={() => scrollTo("como-funciona")}>¿Cómo funciona?</a>
           <a className="lp-nav__link" onClick={() => scrollTo("documentacion")}>Documentación</a>
           <a className="lp-nav__link" onClick={() => scrollTo("equipo")}>Equipo</a>
+          <a className="lp-nav__link" onClick={() => scrollTo("contacto")}>Contacto</a>
         </div>
         <button className="lp-nav__cta" onClick={onStart}>
           Iniciar sesión <span className="material-symbols-rounded">arrow_forward</span>
@@ -53,10 +54,10 @@ export function LandingPage({ onStart }: LandingPageProps) {
             </div>
             <div className="lp-hero__devs">
               <div className="lp-hero__avatars">
-                <div className="lp-hero__avatar"></div>
-                <div className="lp-hero__avatar"></div>
-                <div className="lp-hero__avatar"></div>
-                <div className="lp-hero__avatar"></div>
+                <img src="/Integrants/valentina.png" alt="Valentina" className="lp-hero__avatar-img" />
+                <img src="/Integrants/jesus.png" alt="Jesus" className="lp-hero__avatar-img" />
+                <img src="/Integrants/andrea.png" alt="Andrea" className="lp-hero__avatar-img" />
+                <img src="/Integrants/caro.png" alt="Diana" className="lp-hero__avatar-img" />
               </div>
               <span className="lp-hero__devs-text">Hecho por desarrolladores, para desarrolladores.</span>
             </div>
@@ -154,16 +155,14 @@ export function LandingPage({ onStart }: LandingPageProps) {
       <section id="demo" className="lp-demo">
         <div className="lp-demo__wrapper">
           <div className="lp-demo__video">
-            <div className="lp-demo__player">
-              <span className="material-symbols-rounded lp-demo__play">play_circle</span>
-            </div>
-            <div className="lp-demo__controls">
-              <span className="material-symbols-rounded">play_arrow</span>
-              <div className="lp-demo__progress"><div className="lp-demo__progress-fill"></div></div>
-              <span className="lp-demo__time">0:00 / 1:30</span>
-              <span className="material-symbols-rounded">volume_up</span>
-              <span className="material-symbols-rounded">fullscreen</span>
-            </div>
+            <iframe
+              src="https://www.youtube.com/embed/CNs0XHjKadk"
+              title="Ctrl+Rest Demo"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="lp-demo__iframe"
+            />
           </div>
           <div className="lp-demo__text">
             <h2 className="lp-section-title lp-section-title--left">Demostración</h2>
@@ -171,9 +170,6 @@ export function LandingPage({ onStart }: LandingPageProps) {
               Descubre cómo las misiones, los BreakPoints y Blizzy te acompañan para que programar
               sea más saludable y divertido.
             </p>
-            <button className="lp-btn lp-btn--outline lp-btn--sm">
-              Ver video completo <span className="material-symbols-rounded">play_circle</span>
-            </button>
           </div>
         </div>
       </section>
@@ -181,36 +177,33 @@ export function LandingPage({ onStart }: LandingPageProps) {
       {/* ===== ARQUITECTURA CON AWS ===== */}
       <section className="lp-arch">
         <h2 className="lp-section-title">Arquitectura con AWS</h2>
-        <div className="lp-arch__row">
+        <div className="lp-arch__flow">
           <div className="lp-arch__item">
             <div className="lp-arch__icon"><span className="material-symbols-rounded">web</span></div>
             <span>Frontend<br />(React)</span>
           </div>
+          <div className="lp-arch__arrow"><span className="material-symbols-rounded">arrow_forward</span></div>
           <div className="lp-arch__item">
             <div className="lp-arch__icon"><span className="material-symbols-rounded">cloud_upload</span></div>
             <span>AWS<br />Amplify</span>
           </div>
+          <div className="lp-arch__arrow"><span className="material-symbols-rounded">arrow_forward</span></div>
           <div className="lp-arch__item">
             <div className="lp-arch__icon"><span className="material-symbols-rounded">api</span></div>
             <span>API<br />Gateway</span>
           </div>
+          <div className="lp-arch__arrow"><span className="material-symbols-rounded">arrow_forward</span></div>
           <div className="lp-arch__item">
             <div className="lp-arch__icon"><span className="material-symbols-rounded">function</span></div>
             <span>AWS<br />Lambda</span>
           </div>
+          <div className="lp-arch__arrow"><span className="material-symbols-rounded">arrow_forward</span></div>
           <div className="lp-arch__item">
             <div className="lp-arch__icon"><span className="material-symbols-rounded">database</span></div>
             <span>DynamoDB</span>
           </div>
         </div>
-        <div className="lp-arch__pills">
-          <div className="lp-arch__pill lp-arch__pill--green">
-            <span className="material-symbols-rounded">psychology</span> Amazon Bedrock (IA Generativa)
-          </div>
-          <div className="lp-arch__pill lp-arch__pill--blue">
-            <span className="material-symbols-rounded">record_voice_over</span> Amazon Polly (VoZ)
-          </div>
-        </div>
+        <p className="lp-arch__desc">Infraestructura serverless, escalable y segura en la nube de AWS</p>
       </section>
 
       {/* ===== DOCUMENTACIÓN ===== */}
@@ -250,51 +243,50 @@ export function LandingPage({ onStart }: LandingPageProps) {
         <h2 className="lp-section-title">Equipo</h2>
         <div className="lp-team__grid">
           <div className="lp-team__card">
-            <div className="lp-team__avatar">
-              <span className="material-symbols-rounded">face</span>
-            </div>
-            <h4>Valentina G.</h4>
+            <img src="/Integrants/valentina.png" alt="Valentina Burbano" className="lp-team__photo" />
+            <h4>Valentina Burbano</h4>
+            <span className="lp-team__role">Backend Developer</span>
+            <p>Apasionada por la lógica, las API y construir soluciones escalables con Python y AWS.</p>
+          </div>
+          <div className="lp-team__card">
+            <img src="/Integrants/jesus.png" alt="Jesus Manuera" className="lp-team__photo" />
+            <h4>Jesus Manuera</h4>
+            <span className="lp-team__role">DevOps Engineer</span>
+            <p>Encargado de la infraestructura, CI/CD y la integración de servicios en la nube.</p>
+          </div>
+          <div className="lp-team__card">
+            <img src="/Integrants/andrea.png" alt="Andrea Granados" className="lp-team__photo" />
+            <h4>Andrea Granados</h4>
             <span className="lp-team__role">UI/UX Designer</span>
             <p>Diseñadora apasionada por crear experiencias intuitivas y visuales que conecten.</p>
           </div>
           <div className="lp-team__card">
-            <div className="lp-team__avatar">
-              <span className="material-symbols-rounded">face</span>
-            </div>
-            <h4>María P.</h4>
+            <img src="/Integrants/caro.png" alt="Diana Argüello" className="lp-team__photo" />
+            <h4>Diana Argüello</h4>
             <span className="lp-team__role">Frontend Developer</span>
             <p>Desarrolladora frontend con amor por los detalles y las interfaces accesibles.</p>
-          </div>
-          <div className="lp-team__card">
-            <div className="lp-team__avatar">
-              <span className="material-symbols-rounded">face</span>
-            </div>
-            <h4>Laura M.</h4>
-            <span className="lp-team__role">Backend Developer</span>
-            <p>Apasionada por la lógica, las API y construir soluciones escalables en la nube.</p>
-          </div>
-          <div className="lp-team__card">
-            <div className="lp-team__avatar">
-              <span className="material-symbols-rounded">face</span>
-            </div>
-            <h4>Sofía R.</h4>
-            <span className="lp-team__role">DevOps Engineer</span>
-            <p>Me encargo de la infraestructura y la integración de servicios en AWS.</p>
           </div>
         </div>
       </section>
 
-      {/* ===== BLIZZY CTA ===== */}
-      <section className="lp-blizzy">
-        <div className="lp-blizzy__card">
-          <div className="lp-blizzy__mascot">
-            <span className="material-symbols-rounded">pets</span>
+      {/* ===== BLIZZY CTA → CONTÁCTANOS ===== */}
+      <section id="contacto" className="lp-contact">
+        <div className="lp-contact__wrapper">
+          <div className="lp-contact__card">
+            <h2 className="lp-section-title">Contáctanos</h2>
+            <p className="lp-contact__desc">¿Tienes dudas, sugerencias o quieres saber más? Déjanos tu mensaje y te responderemos.</p>
+            <form className="lp-contact__form" onSubmit={(e) => e.preventDefault()}>
+              <input type="text" placeholder="Tu nombre" className="lp-contact__input" />
+              <input type="email" placeholder="Tu correo electrónico" className="lp-contact__input" />
+              <textarea placeholder="Tu mensaje..." className="lp-contact__textarea" rows={4}></textarea>
+              <button type="submit" className="lp-btn lp-btn--primary lp-btn--lg">
+                Enviar mensaje <span className="material-symbols-rounded">send</span>
+              </button>
+            </form>
           </div>
-          <h2>¡Hola! Soy <span className="gradient-text">Blizzy</span></h2>
-          <p>Tu compañero de pausas activas y misiones.<br />¿Listo para programar con equilibrio?</p>
-          <button className="lp-btn lp-btn--primary lp-btn--lg" onClick={onStart}>
-            Comienza ahora <span className="material-symbols-rounded">arrow_forward</span>
-          </button>
+          <div className="lp-contact__image">
+            <img src="/tu-bienestar.png" alt="Tu bienestar, tu mejor código" />
+          </div>
         </div>
       </section>
 
@@ -314,6 +306,27 @@ export function LandingPage({ onStart }: LandingPageProps) {
         </div>
         <div className="lp-footer__banner">
           <img src="/pie-de-pagina.png" alt="Pie de página Ctrl+Rest" />
+          <div className="lp-footer__connect">
+            <h3>Conecta con nosotros</h3>
+            <div className="lp-footer__links">
+              <a href="https://www.linkedin.com/in/valentina-burbano-salazar-2473a2327" target="_blank" rel="noopener noreferrer" className="lp-footer__link">
+                <span className="lp-footer__link-name">Valentina Burbano</span>
+                <span className="lp-footer__link-badge">LinkedIn →</span>
+              </a>
+              <a href="https://www.linkedin.com/in/jesus-múnera-3702962aa" target="_blank" rel="noopener noreferrer" className="lp-footer__link">
+                <span className="lp-footer__link-name">Jesus Manuera</span>
+                <span className="lp-footer__link-badge">LinkedIn →</span>
+              </a>
+              <a href="https://www.linkedin.com/in/andrea-valentina-granados-garcia-game-developer" target="_blank" rel="noopener noreferrer" className="lp-footer__link">
+                <span className="lp-footer__link-name">Andrea Granados</span>
+                <span className="lp-footer__link-badge">LinkedIn →</span>
+              </a>
+              <a href="https://www.linkedin.com/in/14diana-carolina-arguello-casallas/" target="_blank" rel="noopener noreferrer" className="lp-footer__link">
+                <span className="lp-footer__link-name">Diana Argüello</span>
+                <span className="lp-footer__link-badge">LinkedIn →</span>
+              </a>
+            </div>
+          </div>
         </div>
         <p className="lp-footer__copy">© 2026 Ctrl + Rest. Todos los derechos reservados.</p>
       </footer>

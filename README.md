@@ -285,10 +285,10 @@ ctrl-rest/
 
 | Nombre | Rol | Descripción |
 |--------|-----|-------------|
-| **Valentina G.** | UI/UX Designer | Diseñadora apasionada por crear experiencias intuitivas y visuales que conecten |
-| **María P.** | Frontend Developer | Desarrolladora frontend con amor por los detalles y las interfaces accesibles |
-| **Laura M.** | Backend Developer | Apasionada por la lógica, las API y construir soluciones escalables en la nube |
-| **Sofía R.** | DevOps Engineer | Encargada de la infraestructura y la integración de servicios en AWS |
+| **Valentina Burbano** | Backend Developer | Apasionada por la lógica, las API y construir soluciones escalables con Python y AWS |
+| **Jesus Manuera** | DevOps Engineer | Encargado de la infraestructura, CI/CD y la integración de servicios en la nube |
+| **Andrea Granados** | UI/UX Designer | Diseñadora apasionada por crear experiencias intuitivas y visuales que conecten |
+| **Diana Argüello** | Frontend Developer | Desarrolladora frontend con amor por los detalles y las interfaces accesibles |
 
 ---
 

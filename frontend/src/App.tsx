@@ -3,12 +3,14 @@ import { PausaScreen } from "./components/PausaScreen";
 import { PingPongGame } from "./components/PingPongGame";
 import { ARPaintGame } from "./components/ARPaintGame";
 import { MemeGenerator } from "./components/MemeGenerator";
+import { StretchChallenge } from "./components/StretchChallenge";
 import { LandingPage } from "./components/LandingPage";
+import { AuthScreen } from "./components/AuthScreen";
 import { Dashboard } from "./components/Dashboard";
 import { usePostureSensor } from "./hooks/usePostureSensor";
 import "./App.css";
 
-type AppScreen = "landing" | "home" | "postura" | "pausa" | "pingpong" | "paint" | "memes";
+type AppScreen = "landing" | "auth" | "home" | "postura" | "pausa" | "pingpong" | "paint" | "memes" | "stretch";
 
 function App() {
   const {
@@ -30,6 +32,7 @@ function App() {
   const [points, setPoints] = useState(0);
   const [missionsCompleted, setMissionsCompleted] = useState(0);
   const [lastReward, setLastReward] = useState<string | null>(null);
+  const [user, setUser] = useState<{ name: string; email: string } | null>(null);
   const displayVideoRef = useRef<HTMLVideoElement>(null);
 
   const currentStream = videoRef.current?.srcObject as MediaStream | null;
@@ -57,8 +60,9 @@ function App() {
   const goToPingPong = useCallback(() => { setScreen("pingpong"); startPingPong(); }, [startPingPong]);
   const goToPaint = useCallback(() => { setScreen("paint"); startPingPong(); }, [startPingPong]);
   const goToMemes = useCallback(() => setScreen("memes"), []);
+  const goToStretch = useCallback(() => { setScreen("stretch"); startExercise(); }, [startExercise]);
   const goHome = useCallback(() => {
-    if (screen === "pausa") stopExercise();
+    if (screen === "pausa" || screen === "stretch") stopExercise();
     else if (screen === "pingpong" || screen === "paint") stopPingPong();
     setScreen("home");
   }, [screen, stopExercise, stopPingPong]);
@@ -85,8 +89,12 @@ function App() {
     setScreen("home");
   }, [stopPingPong, state.game]);
 
-  const goToApp = useCallback(() => setScreen("home"), []);
+  const goToApp = useCallback(() => setScreen("auth"), []);
   const goToLanding = useCallback(() => setScreen("landing"), []);
+  const handleLogin = useCallback((u: { name: string; email: string }) => {
+    setUser(u);
+    setScreen("home");
+  }, []);
 
   return (
     <>
@@ -101,6 +109,11 @@ function App() {
 
       {/* Landing */}
       {screen === "landing" && <LandingPage onStart={goToApp} />}
+
+      {/* Auth */}
+      {screen === "auth" && (
+        <AuthScreen onLogin={handleLogin} onBack={goToLanding} />
+      )}
 
       {/* Dashboard */}
       {screen === "home" && (
@@ -119,9 +132,12 @@ function App() {
           onStartPingPong={goToPingPong}
           onStartPaint={goToPaint}
           onStartMemes={goToMemes}
+          onStartStretch={goToStretch}
           onBackToLanding={goToLanding}
+          onLogout={() => { setUser(null); setScreen("landing"); }}
           onAddPoints={(pts: number) => setPoints((p) => p + pts)}
           onAddMission={() => setMissionsCompleted((m) => m + 1)}
+          userName={user?.name || "Dev"}
         />
       )}
 
@@ -222,6 +238,19 @@ function App() {
           state={state}
           landmarks={state.landmarks}
           onBack={() => { setPoints((p) => p + 10); setMissionsCompleted((m) => m + 1); setScreen("home"); }}
+        />
+      )}
+
+      {/* Stretch Challenge */}
+      {screen === "stretch" && (
+        <StretchChallenge
+          state={state}
+          landmarks={state.landmarks}
+          connected={connected}
+          stream={currentStream}
+          srcVideoRef={videoRef}
+          onCompleted={() => { setPoints((p) => p + 20); setMissionsCompleted((m) => m + 1); stopExercise(); setScreen("home"); }}
+          onBack={() => { stopExercise(); setScreen("home"); }}
         />
       )}
     </>

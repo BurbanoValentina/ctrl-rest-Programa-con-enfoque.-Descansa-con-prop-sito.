@@ -249,12 +249,21 @@
 }
 
 .lp-hero__avatar {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   background: linear-gradient(135deg, #374151, #1f2937);
   border: 2px solid #080816;
   border-radius: 50%;
-  margin-right: -8px;
+  margin-right: -10px;
+}
+
+.lp-hero__avatar-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #7c3aed;
+  margin-right: -10px;
 }
 
 .lp-hero__devs-text {
@@ -531,14 +540,8 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
-.lp-arch__row {
-  display: flex;
-  justify-content: space-between;
-  gap: 2rem;
-  margin: 3rem auto 2rem;
-  flex-wrap: wrap;
-  max-width: 1300px;
-  padding: 0 4rem;
+.lp-arch__row, .lp-arch__flow + .lp-arch__row {
+  display: none;
 }
 
 .lp-arch__item {
@@ -572,38 +575,35 @@
   line-height: 1.3;
 }
 
-.lp-arch__pills {
+.lp-arch__flow {
   display: flex;
   justify-content: center;
-  gap: 1.5rem;
-  margin-top: 2.5rem;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 3rem auto 1.5rem;
+  max-width: 1300px;
   flex-wrap: wrap;
 }
 
-.lp-arch__pill {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 2rem;
-  border-radius: 28px;
-  font-size: 0.95rem;
-  font-weight: 600;
+.lp-arch__arrow {
+  color: #7c3aed;
+  animation: arrowPulse 2s ease-in-out infinite;
 }
 
-.lp-arch__pill .material-symbols-rounded {
-  font-size: 1.1rem;
+.lp-arch__arrow .material-symbols-rounded {
+  font-size: 1.5rem;
 }
 
-.lp-arch__pill--green {
-  background: rgba(16, 185, 129, 0.1);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.25);
+@keyframes arrowPulse {
+  0%, 100% { opacity: 0.4; transform: translateX(0); }
+  50% { opacity: 1; transform: translateX(4px); }
 }
 
-.lp-arch__pill--blue {
-  background: rgba(59, 130, 246, 0.1);
-  color: #60a5fa;
-  border: 1px solid rgba(59, 130, 246, 0.25);
+.lp-arch__desc {
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.92rem;
+  margin-top: 1.5rem;
 }
 
 /* ============ DOCUMENTACIÓN ============ */
@@ -699,6 +699,17 @@
 
 .lp-team__avatar .material-symbols-rounded {
   font-size: 2rem;
+}
+
+.lp-team__photo {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(124, 58, 237, 0.4);
+  margin: 0 auto 1rem;
+  display: block;
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.2);
 }
 
 .lp-team__card h4 {
@@ -830,6 +841,8 @@
 .lp-footer__banner {
   width: 100%;
   line-height: 0;
+  position: relative;
+  overflow: hidden;
 }
 
 .lp-footer__banner img {
@@ -837,6 +850,65 @@
   height: auto;
   display: block;
 }
+
+.lp-footer__connect {
+  position: absolute;
+  top: 50%;
+  right: 4%;
+  transform: translateY(-50%);
+  background: rgba(8, 8, 22, 0.88);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(124, 58, 237, 0.3);
+  border-radius: 18px;
+  padding: 2rem 2.5rem;
+}
+
+.lp-footer__connect h3 {
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+}
+
+.lp-footer__links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.lp-footer__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  color: #d1d5db;
+  text-decoration: none;
+  padding: 0.9rem 1.4rem;
+  border-radius: 12px;
+  transition: all 0.2s;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.lp-footer__link:hover {
+  background: rgba(124, 58, 237, 0.12);
+  border-color: rgba(124, 58, 237, 0.3);
+  color: #fff;
+  transform: translateX(4px);
+}
+
+.lp-footer__link-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.lp-footer__link-badge {
+  font-size: 0.9rem;
+  color: #0a66c2;
+  font-weight: 600;
+}
+
+.lp-footer__link:hover .lp-footer__link-badge { color: #a78bfa; }
 
 .lp-footer__copy {
   text-align: center;
@@ -941,5 +1013,144 @@
 
   .lp-arch__row {
     gap: 1.2rem;
+  }
+}
+
+/* ============ ANIMATIONS ============ */
+/* Floating animation for cards */
+.lp-quees__card { animation: floatUp 0.6s ease forwards; opacity: 0; }
+.lp-quees__card:nth-child(1) { animation-delay: 0.1s; }
+.lp-quees__card:nth-child(2) { animation-delay: 0.2s; }
+.lp-quees__card:nth-child(3) { animation-delay: 0.3s; }
+.lp-quees__card:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes floatUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+
+/* Pulsing glow on hero buttons */
+.lp-btn--primary { animation: pulseGlow 2.5s ease-in-out infinite; }
+@keyframes pulseGlow { 0%,100%{box-shadow:0 0 0 rgba(124,58,237,0)} 50%{box-shadow:0 0 30px rgba(124,58,237,0.4)} }
+
+/* Floating mascot on hero */
+.lp-hero__bg { animation: slowZoom 20s ease-in-out infinite alternate; }
+@keyframes slowZoom { from{transform:scale(1)} to{transform:scale(1.05)} }
+
+/* Steps circle pulse */
+.lp-steps__circle { animation: stepPulse 3s ease-in-out infinite; }
+@keyframes stepPulse { 0%,100%{box-shadow:0 0 0 rgba(99,102,241,0)} 50%{box-shadow:0 0 20px rgba(99,102,241,0.3)} }
+
+/* Team cards hover lift */
+.lp-team__card { transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s; }
+.lp-team__card:hover { transform: translateY(-8px); border-color: rgba(124,58,237,0.4); box-shadow: 0 12px 40px rgba(124,58,237,0.15); }
+
+/* Blizzy card glow animation */
+.lp-blizzy__card { animation: blizzyGlow 4s ease-in-out infinite alternate; }
+@keyframes blizzyGlow { from{box-shadow:0 0 20px rgba(124,58,237,0.1)} to{box-shadow:0 0 50px rgba(124,58,237,0.25)} }
+
+/* Nav CTA shimmer */
+.lp-nav__cta { position:relative; overflow:hidden; }
+.lp-nav__cta::after { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent); animation:shimmer 3s infinite; }
+@keyframes shimmer { 0%{left:-100%} 100%{left:100%} }
+
+/* Doc cards stagger */
+.lp-docs__card { animation: floatUp 0.5s ease forwards; opacity:0; }
+.lp-docs__card:nth-child(1) { animation-delay:0.1s; }
+.lp-docs__card:nth-child(2) { animation-delay:0.2s; }
+.lp-docs__card:nth-child(3) { animation-delay:0.3s; }
+.lp-docs__card:nth-child(4) { animation-delay:0.4s; }
+.lp-docs__card:nth-child(5) { animation-delay:0.5s; }
+
+/* Arch icons float */
+.lp-arch__icon { animation: archFloat 3s ease-in-out infinite; }
+.lp-arch__item:nth-child(2) .lp-arch__icon { animation-delay:0.3s; }
+.lp-arch__item:nth-child(3) .lp-arch__icon { animation-delay:0.6s; }
+.lp-arch__item:nth-child(4) .lp-arch__icon { animation-delay:0.9s; }
+.lp-arch__item:nth-child(5) .lp-arch__icon { animation-delay:1.2s; }
+@keyframes archFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+
+/* YouTube iframe */
+.lp-demo__iframe { width:100%; height:100%; border-radius:14px; position:absolute; inset:0; }
+.lp-demo__video { position:relative; aspect-ratio:16/9; border-radius:16px; overflow:hidden; flex:1.2; }
+
+/* ============ CONTACTO ============ */
+.lp-contact {
+  padding: 5rem 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.lp-contact__wrapper {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  max-width: 1100px;
+  width: 100%;
+}
+
+.lp-contact__card {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(99, 102, 241, 0.05));
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  border-radius: 28px;
+  padding: 3.5rem 4rem;
+  flex: 1;
+  text-align: center;
+}
+
+.lp-contact__image {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lp-contact__image img {
+  width: 100%;
+  max-width: 550px;
+  height: auto;
+  border-radius: 20px;
+}
+
+.lp-contact__desc {
+  color: #9ca3af;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.lp-contact__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lp-contact__input,
+.lp-contact__textarea {
+  background: rgba(10, 10, 26, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0.9rem 1.2rem;
+  color: #e0e0f0;
+  font-size: 0.95rem;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.lp-contact__input:focus,
+.lp-contact__textarea:focus {
+  border-color: #7c3aed;
+}
+
+.lp-contact__input::placeholder,
+.lp-contact__textarea::placeholder {
+  color: #4b5563;
+}
+
+.lp-contact__textarea {
+  resize: none;
+}
+
+@media (max-width: 768px) {
+  .lp-contact__wrapper {
+    flex-direction: column;
   }
 }

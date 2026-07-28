@@ -16,12 +16,15 @@ interface DashboardProps {
   onStartPingPong: () => void;
   onStartPaint: () => void;
   onStartMemes: () => void;
+  onStartStretch: () => void;
   onBackToLanding: () => void;
+  onLogout: () => void;
   onAddPoints: (pts: number) => void;
   onAddMission: () => void;
+  userName: string;
 }
 
-type Tab = "inicio" | "misiones" | "tienda" | "progreso" | "regalos" | "comunidad";
+type Tab = "inicio" | "misiones" | "tienda" | "progreso" | "regalos" | "comunidad" | "relax";
 
 const PHRASES = [
   "¡Tú puedes! Recuerda tomar descansos. 💜",
@@ -93,8 +96,8 @@ const THEME_COLORS = [
 
 export function Dashboard({
   points, missionsCompleted, cameraActive, cameraError, connected, state, videoRef,
-  onStartCamera, onStopCamera, onStartPostura, onStartPausa, onStartPingPong, onStartPaint, onStartMemes, onBackToLanding,
-  onAddPoints, onAddMission,
+  onStartCamera, onStopCamera, onStartPostura, onStartPausa, onStartPingPong, onStartPaint, onStartMemes, onStartStretch, onBackToLanding, onLogout,
+  onAddPoints, onAddMission, userName,
 }: DashboardProps) {
   const [activeTab, setActiveTab] = useState<Tab>("inicio");
   const [timerSeconds, setTimerSeconds] = useState(25 * 60);
@@ -105,11 +108,11 @@ export function Dashboard({
   const [blizzyPose, setBlizzyPose] = useState(0);
   const [ownedAvatars, setOwnedAvatars] = useState<number[]>([]);
   const [selectedAvatar, setSelectedAvatar] = useState("/gato sentado-02.png");
-  const [nickname, setNickname] = useState("Dev");
+  const [nickname, setNickname] = useState(userName);
   const [editingNick, setEditingNick] = useState(false);
   const [nickInput, setNickInput] = useState("Dev");
   const [coins, setCoins] = useState(points);
-  const [streakDays, setStreakDays] = useState([false, false, false, false, false, false, false]);
+  const [streakDays, setStreakDays] = useState<boolean[]>(Array(28).fill(false));
   const [showReward, setShowReward] = useState<{ xp: number; coins: number; message: string } | null>(null);
   const [levelUpReward, setLevelUpReward] = useState<string | null>(null);
   const [profileBg, setProfileBg] = useState("#7c3aed");
@@ -117,6 +120,12 @@ export function Dashboard({
   const [themeBg, setThemeBg] = useState("#0c0c1e");
   const [themeAccent, setThemeAccent] = useState("#7c3aed");
   const [ownedThemes, setOwnedThemes] = useState<string[]>(["th1"]);
+  const [communityMsg, setCommunityMsg] = useState("");
+  const [communityPosts, setCommunityPosts] = useState([
+    { id: 1, user: "DevCat99", avatar: "/ga1-02.png", text: "¡Me encanta la idea de las pausas activas! El ping pong AR es genial 🏓", time: "Hace 2h" },
+    { id: 2, user: "CodeZen", avatar: "/ga3-02.png", text: "La detección de postura me ayudó mucho, ya no me encorvo tanto 🧘", time: "Hace 5h" },
+    { id: 3, user: "NightOwl", avatar: "/ga6-02.png", text: "Las monedas y la tienda motivan mucho a seguir tomando pausas 💜", time: "Hace 1d" },
+  ]);
   const intervalRef = useRef<number | null>(null);
   const displayVideoRef = useRef<HTMLVideoElement>(null);
 
@@ -132,7 +141,19 @@ export function Dashboard({
       if (diff > 0) return prev + diff;
       return prev;
     });
-  }, [points]);
+    // Fill streak when missions are completed
+    if (missionsCompleted > 0) {
+      setStreakDays((sd) => {
+        const filled = sd.filter(Boolean).length;
+        if (filled < missionsCompleted && filled < 28) {
+          const next = [...sd];
+          next[filled] = true;
+          return next;
+        }
+        return sd;
+      });
+    }
+  }, [points, missionsCompleted]);
 
   // Camera stream
   useEffect(() => {
@@ -260,21 +281,26 @@ export function Dashboard({
       <aside className="dash-sidebar">
         <div className="dash-sidebar__logo">
           <span className="material-symbols-rounded">pets</span>
-          <span>BreakPoint</span>
+          <span>Ctrl+Rest</span>
         </div>
         <nav className="dash-sidebar__nav">
-          {([["inicio", "home", "Inicio"], ["misiones", "rocket_launch", "Misiones"], ["progreso", "person", "Perfil"], ["tienda", "storefront", "Tienda"], ["regalos", "redeem", "Regalos"], ["comunidad", "forum", "Comunidad"]] as const).map(([tab, icon, label]) => (
+          {([["inicio", "home", "Inicio"], ["misiones", "rocket_launch", "Misiones"], ["progreso", "person", "Perfil"], ["tienda", "storefront", "Tienda"], ["regalos", "redeem", "Regalos"], ["comunidad", "forum", "Comunidad"], ["relax", "spa", "Relax"]] as const).map(([tab, icon, label]) => (
             <button key={tab} className={`dash-sidebar__item ${activeTab === tab ? "active" : ""}`} onClick={() => setActiveTab(tab as Tab)}>
               <span className="material-symbols-rounded">{icon}</span> {label}
             </button>
           ))}
         </nav>
-        <div className="dash-sidebar__user" onClick={() => setActiveTab("progreso")}>
-          <img src={selectedAvatar} alt="avatar" className="dash-sidebar__user-img" />
-          <div className="dash-sidebar__user-info">
-            <span className="dash-sidebar__user-name">{nickname}</span>
-            <span className="dash-sidebar__user-level">Nivel {level}</span>
+        <div className="dash-sidebar__bottom">
+          <div className="dash-sidebar__user" onClick={() => setActiveTab("progreso")}>
+            <img src={selectedAvatar} alt="avatar" className="dash-sidebar__user-img" />
+            <div className="dash-sidebar__user-info">
+              <span className="dash-sidebar__user-name">{nickname}</span>
+              <span className="dash-sidebar__user-level">Nivel {level}</span>
+            </div>
           </div>
+          <button className="dash-sidebar__logout" onClick={onLogout}>
+            <span className="material-symbols-rounded">logout</span> Cerrar sesión
+          </button>
         </div>
       </aside>
 
@@ -318,10 +344,10 @@ export function Dashboard({
                     <span className="dash-racha__label">días</span>
                   </div>
                   <div className="dash-racha__calendar">
-                    {DAYS.map((d, i) => (
-                      <div key={i} className={`dash-racha__cell ${streakDays[i] ? "active" : ""}`}>
-                        <span className="dash-racha__fire">{streakDays[i] ? "🔥" : "○"}</span>
-                        <span className="dash-racha__day-label">{d}</span>
+                    {streakDays.map((active, i) => (
+                      <div key={i} className={`dash-racha__cell ${active ? "active" : ""}`}>
+                        <span className="dash-racha__fire">{active ? "🔥" : "○"}</span>
+                        <span className="dash-racha__day-label">{i + 1}</span>
                       </div>
                     ))}
                   </div>
@@ -440,11 +466,17 @@ export function Dashboard({
                     <p>Dibuja en el aire con detección de manos</p>
                     <span className="dash-mission__reward">+15 XP • +15 monedas</span>
                   </button>
-                  <button className="dash-card dash-mission" onClick={onStartMemes}>
+                  <button className="dash-card dash-mission" onClick={onStartMemes} disabled={!cameraActive}>
                     <span className="material-symbols-rounded dash-mission__icon" style={{color:"#fbbf24"}}>sentiment_very_satisfied</span>
                     <h4>Memes de Blizzy</h4>
                     <p>Crea memes con las poses del gato</p>
                     <span className="dash-mission__reward">+10 XP • +10 monedas</span>
+                  </button>
+                  <button className="dash-card dash-mission" onClick={onStartStretch} disabled={!cameraActive}>
+                    <span className="material-symbols-rounded dash-mission__icon" style={{color:"#34d399"}}>fitness_center</span>
+                    <h4>Estiramiento</h4>
+                    <p>3 retos de estiramiento guiados con IA</p>
+                    <span className="dash-mission__reward">+20 XP • +20 monedas</span>
                   </button>
                 </div>
                 {!cameraActive && <p className="dash-missions-section__hint">Activa la cámara para comenzar una misión</p>}
@@ -586,36 +618,21 @@ export function Dashboard({
                 <div className="dash-card dash-regalos__qr">
                   <span className="material-symbols-rounded dash-regalos__qr-icon">qr_code_2</span>
                   <h4>Escanea el QR</h4>
-                  <p>Accede a contenido exclusivo y aprende más sobre Ctrl+Rest</p>
+                  <p>Dale like a nuestro post en LinkedIn y gana 50 monedas</p>
                   <div className="dash-regalos__qr-code">
                     <span className="material-symbols-rounded">qr_code</span>
                   </div>
-                  <span className="dash-regalos__qr-hint">ctrl-rest.dev/info</span>
+                  <span className="dash-regalos__qr-hint">Escanea → Dale like → Sube captura</span>
                 </div>
-                <div className="dash-card dash-regalos__social">
-                  <h4><span className="material-symbols-rounded">group_add</span> Síguenos y gana 50 monedas</h4>
-                  <p>Sigue nuestros perfiles, toma una captura y gana monedas</p>
-                  <div className="dash-regalos__profiles">
-                    <div className="dash-regalos__profile-item">
-                      <span className="material-symbols-rounded">person</span>
-                      <span>@valentina_dev</span>
-                    </div>
-                    <div className="dash-regalos__profile-item">
-                      <span className="material-symbols-rounded">person</span>
-                      <span>@maria_frontend</span>
-                    </div>
-                    <div className="dash-regalos__profile-item">
-                      <span className="material-symbols-rounded">person</span>
-                      <span>@laura_backend</span>
-                    </div>
-                    <div className="dash-regalos__profile-item">
-                      <span className="material-symbols-rounded">person</span>
-                      <span>@sofia_devops</span>
-                    </div>
-                  </div>
-                  <button className="dash-regalos__claim" onClick={() => { setCoins((c) => c + 50); onAddPoints(50); setShowReward({ xp: 50, coins: 50, message: "¡Regalos reclamados!" }); setTimeout(() => setShowReward(null), 4000); }}>
-                    <span className="material-symbols-rounded">redeem</span> Reclamar 50 monedas
-                  </button>
+                <div className="dash-card dash-regalos__upload">
+                  <h4><span className="material-symbols-rounded">cloud_upload</span> Sube tu captura</h4>
+                  <p>Toma una captura de pantalla del like en el post y súbela aquí para reclamar tus monedas</p>
+                  <label className="dash-regalos__upload-area">
+                    <input type="file" accept="image/*" className="dash-regalos__upload-input" onChange={() => { setCoins((c) => c + 50); onAddPoints(50); setShowReward({ xp: 50, coins: 50, message: "¡Captura recibida!" }); setTimeout(() => setShowReward(null), 4000); }} />
+                    <span className="material-symbols-rounded">add_photo_alternate</span>
+                    <span>Haz clic o arrastra tu captura aquí</span>
+                  </label>
+                  <p className="dash-regalos__upload-note">Al subir la captura recibirás +50 monedas automáticamente</p>
                 </div>
               </div>
             </div>
@@ -627,24 +644,54 @@ export function Dashboard({
               <h3><span className="material-symbols-rounded">forum</span> Comunidad</h3>
               <p className="dash-comunidad__desc">Deja tu opinión, comparte tu experiencia o sugiere mejoras</p>
               <div className="dash-card dash-comunidad__form">
-                <textarea className="dash-comunidad__textarea" placeholder="Escribe tu mensaje aquí... ¿Qué te pareció la plataforma? ¿Qué mejorarías?" rows={4}></textarea>
-                <button className="dash-comunidad__send">
-                  <span className="material-symbols-rounded">send</span> Enviar opinión
+                <textarea className="dash-comunidad__textarea" placeholder="Escribe tu mensaje aquí... ¿Qué te pareció la plataforma? ¿Qué mejorarías?" rows={4} value={communityMsg} onChange={(e) => setCommunityMsg(e.target.value)}></textarea>
+                <button className="dash-comunidad__send" onClick={() => { if (communityMsg.trim()) { setCommunityPosts([{ id: Date.now(), user: nickname, avatar: selectedAvatar, text: communityMsg.trim(), time: "Ahora" }, ...communityPosts]); setCommunityMsg(""); } }}>
+                  <span className="material-symbols-rounded">send</span> Publicar
                 </button>
               </div>
               <div className="dash-comunidad__messages">
                 <h4>Opiniones recientes</h4>
-                <div className="dash-card dash-comunidad__msg">
-                  <div className="dash-comunidad__msg-header"><img src="/ga1-02.png" alt="" className="dash-comunidad__msg-avatar" /><span>DevCat99</span><small>Hace 2h</small></div>
-                  <p>¡Me encanta la idea de las pausas activas! El ping pong AR es genial 🏓</p>
-                </div>
-                <div className="dash-card dash-comunidad__msg">
-                  <div className="dash-comunidad__msg-header"><img src="/ga3-02.png" alt="" className="dash-comunidad__msg-avatar" /><span>CodeZen</span><small>Hace 5h</small></div>
-                  <p>La detección de postura me ayudó mucho, ya no me encorvo tanto 🧘</p>
-                </div>
-                <div className="dash-card dash-comunidad__msg">
-                  <div className="dash-comunidad__msg-header"><img src="/ga6-02.png" alt="" className="dash-comunidad__msg-avatar" /><span>NightOwl</span><small>Hace 1d</small></div>
-                  <p>Las monedas y la tienda motivan mucho a seguir tomando pausas 💜</p>
+                {communityPosts.map((post) => (
+                  <div key={post.id} className="dash-card dash-comunidad__msg">
+                    <div className="dash-comunidad__msg-header"><img src={post.avatar} alt="" className="dash-comunidad__msg-avatar" /><span>{post.user}</span><small>{post.time}</small></div>
+                    <p>{post.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ===== RELAX ===== */}
+          {activeTab === "relax" && (
+            <div className="dash-relax">
+              <h3><span className="material-symbols-rounded">spa</span> Zona Relax</h3>
+              <p className="dash-relax__desc">Tómate un momento para respirar y relajarte. Disfruta la animación. 🕯️</p>
+              <div className="dash-relax__folleto">
+                <h4><span className="material-symbols-rounded">menu_book</span> Información sobre lesiones</h4>
+                <iframe src="https://www.covver.com/embed/h8r1HZC2t2Ma8iTyvc1n" width="100%" height="500" style={{border:"none",borderRadius:"16px"}} allowFullScreen allow="web-share"></iframe>
+              </div>
+              <div className="dash-relax__candle-wrapper">
+                <div className="candle-scene">
+                  <div className="candle-light-wave"></div>
+                  <div className="candle1">
+                    <div className="candle1-body">
+                      <div className="candle1-eyes"><span className="candle1-eye-one"></span><span className="candle1-eye-two"></span></div>
+                      <div className="candle1-mouth"></div>
+                    </div>
+                    <div className="candle1-stick"></div>
+                  </div>
+                  <div className="candle2">
+                    <div className="candle2-body">
+                      <div className="candle2-eyes"><div className="candle2-eye-one"></div><div className="candle2-eye-two"></div></div>
+                    </div>
+                    <div className="candle2-stick"></div>
+                  </div>
+                  <div className="candle2-fire"></div>
+                  <div className="candle-sparkles-one"></div>
+                  <div className="candle-sparkles-two"></div>
+                  <div className="candle-smoke-one"></div>
+                  <div className="candle-smoke-two"></div>
+                  <div className="candle-floor"></div>
                 </div>
               </div>
             </div>
