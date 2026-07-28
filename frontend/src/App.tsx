@@ -93,7 +93,7 @@ function App() {
     const earned = 15;
     setPoints((p) => {
       const newPts = p + earned;
-      actualizarPerfil({ puntos: newPts, monedas: newPts }).catch(() => {});
+      actualizarPerfil({ puntos: newPts }).catch(() => {});
       return newPts;
     });
     setMissionsCompleted((m) => m + 1);
@@ -110,7 +110,7 @@ function App() {
     stopPingPong();
     setPoints((p) => {
       const newPts = p + earned;
-      actualizarPerfil({ puntos: newPts, monedas: newPts }).catch(() => {});
+      actualizarPerfil({ puntos: newPts }).catch(() => {});
       return newPts;
     });
     setMissionsCompleted((m) => m + 1);
@@ -266,7 +266,7 @@ function App() {
             stopPingPong();
             setPoints((p) => {
               const newPts = p + 15;
-              actualizarPerfil({ puntos: newPts, monedas: newPts }).catch(() => {});
+              actualizarPerfil({ puntos: newPts }).catch(() => {});
               return newPts;
             });
             setMissionsCompleted((m) => m + 1);
@@ -286,7 +286,7 @@ function App() {
           onBack={() => {
             setPoints((p) => {
               const newPts = p + 10;
-              actualizarPerfil({ puntos: newPts, monedas: newPts }).catch(() => {});
+              actualizarPerfil({ puntos: newPts }).catch(() => {});
               return newPts;
             });
             setMissionsCompleted((m) => m + 1);
@@ -306,7 +306,7 @@ function App() {
           onCompleted={() => {
             setPoints((p) => {
               const newPts = p + 20;
-              actualizarPerfil({ puntos: newPts, monedas: newPts }).catch(() => {});
+              actualizarPerfil({ puntos: newPts }).catch(() => {});
               return newPts;
             });
             setMissionsCompleted((m) => m + 1);
