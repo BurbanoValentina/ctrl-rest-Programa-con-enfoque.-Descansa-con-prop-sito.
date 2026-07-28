@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { getPerfil, actualizarPerfil, completarPausa } from "../services/api";
 import "./Dashboard.css";
 
 interface DashboardProps {
@@ -134,6 +135,19 @@ export function Dashboard({
   const xpForNext = 100 - (points % 100);
   const xpProgress = (points % 100);
 
+  // Cargar datos guardados del perfil al montar
+  useEffect(() => {
+    getPerfil().then((perfil) => {
+      if (perfil.monedas !== undefined) setCoins(perfil.monedas);
+      if (perfil.itemsComprados) setOwnedAvatars(perfil.itemsComprados.filter((i: string) => i.startsWith("av_")).map((i: string) => parseInt(i.replace("av_", ""))));
+      if (perfil.itemsComprados) setOwnedBgs(perfil.itemsComprados.filter((i: string) => i.startsWith("bg")) || ["bg1"]);
+      if (perfil.itemsComprados) setOwnedThemes(perfil.itemsComprados.filter((i: string) => i.startsWith("th")) || ["th1"]);
+      if (perfil.avatar) setSelectedAvatar(perfil.avatar);
+      if (perfil.tema) { const t = JSON.parse(perfil.tema); setThemeBg(t.bg); setThemeAccent(t.accent); }
+      if (perfil.fondoPerfil) setProfileBg(perfil.fondoPerfil);
+    }).catch(() => {});
+  }, []);
+
   // Sync coins with points from parent
   useEffect(() => {
     setCoins((prev) => {
@@ -236,20 +250,60 @@ export function Dashboard({
 
   const buyItem = (id: number, price: number) => {
     if (coins >= price && !ownedAvatars.includes(id)) {
-      setCoins((c) => c - price);
-      setOwnedAvatars((o) => [...o, id]);
+      const newCoins = coins - price;
+      const newOwned = [...ownedAvatars, id];
+      setCoins(newCoins);
+      setOwnedAvatars(newOwned);
+      // Persistir en backend
+      const allItems = [
+        ...newOwned.map((i) => `av_${i}`),
+        ...ownedBgs,
+        ...ownedThemes,
+      ];
+      actualizarPerfil({ monedas: newCoins, itemsComprados: allItems }).catch(() => {});
+    }
+  };
     }
   };
 
-  const equipAvatar = (img: string) => setSelectedAvatar(img);
+  const equipAvatar = (img: string) => {
+    setSelectedAvatar(img);
+    actualizarPerfil({ avatar: img }).catch(() => {});
+  };
 
-  const saveNick = () => { setNickname(nickInput); setEditingNick(false); };
+  const saveNick = () => {
+    setNickname(nickInput);
+    setEditingNick(false);
+    actualizarPerfil({ nickname: nickInput }).catch(() => {});
+  };
 
   const buyBg = (id: string, price: number) => {
-    if (coins >= price && !ownedBgs.includes(id)) { setCoins((c) => c - price); setOwnedBgs((o) => [...o, id]); }
+    if (coins >= price && !ownedBgs.includes(id)) {
+      const newCoins = coins - price;
+      const newBgs = [...ownedBgs, id];
+      setCoins(newCoins);
+      setOwnedBgs(newBgs);
+      const allItems = [
+        ...ownedAvatars.map((i) => `av_${i}`),
+        ...newBgs,
+        ...ownedThemes,
+      ];
+      actualizarPerfil({ monedas: newCoins, itemsComprados: allItems }).catch(() => {});
+    }
   };
   const buyTheme = (id: string, price: number) => {
-    if (coins >= price && !ownedThemes.includes(id)) { setCoins((c) => c - price); setOwnedThemes((o) => [...o, id]); }
+    if (coins >= price && !ownedThemes.includes(id)) {
+      const newCoins = coins - price;
+      const newThemes = [...ownedThemes, id];
+      setCoins(newCoins);
+      setOwnedThemes(newThemes);
+      const allItems = [
+        ...ownedAvatars.map((i) => `av_${i}`),
+        ...ownedBgs,
+        ...newThemes,
+      ];
+      actualizarPerfil({ monedas: newCoins, itemsComprados: allItems }).catch(() => {});
+    }
   };
 
   return (
@@ -548,7 +602,7 @@ export function Dashboard({
                 <div className="dash-tienda__colors">
                   {PROFILE_BG_COLORS.map((c) => (
                     <div key={c.id} className={`dash-tienda__color-item ${ownedBgs.includes(c.id) ? "owned" : ""}`}>
-                      <div className="dash-tienda__color-swatch" style={{ background: c.color }} onClick={() => ownedBgs.includes(c.id) && setProfileBg(c.color)}>
+                      <div className="dash-tienda__color-swatch" style={{ background: c.color }} onClick={() => { if (ownedBgs.includes(c.id)) { setProfileBg(c.color); actualizarPerfil({ fondoPerfil: c.color }).catch(() => {}); } }}>
                         {profileBg === c.color && <span className="material-symbols-rounded">check</span>}
                       </div>
                       <span className="dash-tienda__color-name">{c.name}</span>
@@ -573,7 +627,7 @@ export function Dashboard({
                       </div>
                       <span>{t.name}</span>
                       {ownedThemes.includes(t.id) ? (
-                        <button className="dash-tienda__btn dash-tienda__btn--owned" onClick={() => { setThemeBg(t.bg); setThemeAccent(t.accent); }}>
+                        <button className="dash-tienda__btn dash-tienda__btn--owned" onClick={() => { setThemeBg(t.bg); setThemeAccent(t.accent); actualizarPerfil({ tema: JSON.stringify({ bg: t.bg, accent: t.accent }) }).catch(() => {}); }}>
                           {themeBg === t.bg ? "✓ Activo" : "Usar"}
                         </button>
                       ) : (
@@ -628,7 +682,16 @@ export function Dashboard({
                   <h4><span className="material-symbols-rounded">cloud_upload</span> Sube tu captura</h4>
                   <p>Toma una captura de pantalla del like en el post y súbela aquí para reclamar tus monedas</p>
                   <label className="dash-regalos__upload-area">
-                    <input type="file" accept="image/*" className="dash-regalos__upload-input" onChange={() => { setCoins((c) => c + 50); onAddPoints(50); setShowReward({ xp: 50, coins: 50, message: "¡Captura recibida!" }); setTimeout(() => setShowReward(null), 4000); }} />
+                    <input type="file" accept="image/*" className="dash-regalos__upload-input" onChange={() => {
+                      const newCoins = coins + 50;
+                      setCoins(newCoins);
+                      onAddPoints(50);
+                      setShowReward({ xp: 50, coins: 50, message: "¡Captura recibida!" });
+                      setTimeout(() => setShowReward(null), 4000);
+                      // Persistir: sumar monedas y registrar actividad
+                      actualizarPerfil({ monedas: newCoins }).catch(() => {});
+                      completarPausa({ tipo: "regalo", actividad: "captura-linkedin", duracionSegundos: 10 }).catch(() => {});
+                    }} />
                     <span className="material-symbols-rounded">add_photo_alternate</span>
                     <span>Haz clic o arrastra tu captura aquí</span>
                   </label>

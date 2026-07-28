@@ -93,7 +93,7 @@ export async function iniciarPausa(tipo: string): Promise<void> {
 /**
  * POST /pausa/completar - Registrar pausa completada (suma puntos y racha)
  * 
- * tipo: "salud-mental" | "movimiento" | "diversion" | "calma"
+ * tipo: "salud-mental" | "movimiento" | "diversion" | "calma" | "regalo"
  * actividad: nombre corto de la actividad realizada
  * duracionSegundos: duración de la actividad (10-300)
  */
@@ -104,6 +104,25 @@ export async function completarPausa(data: {
 }): Promise<{ mensaje: string; puntosObtenidos: number; nuevaRacha: number }> {
   const res = await authFetch("/pausa/completar", {
     method: "POST",
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error(`Error ${res.status}: ${await res.text()}`);
+  return res.json();
+}
+
+/**
+ * PUT /usuario/perfil - Actualizar perfil del usuario (monedas, items, avatar, tema, etc.)
+ */
+export async function actualizarPerfil(data: {
+  monedas?: number;
+  itemsComprados?: string[];
+  avatar?: string;
+  tema?: string;
+  fondoPerfil?: string;
+  nickname?: string;
+}): Promise<{ mensaje: string }> {
+  const res = await authFetch("/usuario/perfil", {
+    method: "PUT",
     body: JSON.stringify(data),
   });
   if (!res.ok) throw new Error(`Error ${res.status}: ${await res.text()}`);
