@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { getPerfil, actualizarPerfil, completarPausa } from "../services/api";
+import { getPerfil, actualizarPerfil } from "../services/api";
 import "./Dashboard.css";
 
 interface DashboardProps {
@@ -686,9 +686,8 @@ export function Dashboard({
                       onAddPoints(50);
                       setShowReward({ xp: 50, coins: 50, message: "¡Captura recibida!" });
                       setTimeout(() => setShowReward(null), 4000);
-                      // Persistir: sumar monedas y registrar actividad
+                      // Persistir: sumar monedas
                       actualizarPerfil({ monedas: newCoins }).catch(() => {});
-                      completarPausa({ tipo: "regalo", actividad: "captura-linkedin", duracionSegundos: 10 }).catch(() => {});
                     }} />
                     <span className="material-symbols-rounded">add_photo_alternate</span>
                     <span>Haz clic o arrastra tu captura aquí</span>

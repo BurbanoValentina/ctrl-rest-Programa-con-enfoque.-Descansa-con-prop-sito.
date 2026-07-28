@@ -9,7 +9,7 @@ import { AuthScreen } from "./components/AuthScreen";
 import { Dashboard } from "./components/Dashboard";
 import { usePostureSensor } from "./hooks/usePostureSensor";
 import { getCurrentUser, signOut } from "./services/auth";
-import { getPerfil, completarPausa } from "./services/api";
+import { getPerfil, actualizarPerfil } from "./services/api";
 import type { AuthUser } from "./services/auth";
 import "./App.css";
 
@@ -91,14 +91,16 @@ function App() {
 
   const handlePausaCompleted = useCallback(() => {
     const earned = 15;
-    setPoints((p) => p + earned);
+    setPoints((p) => {
+      const newPts = p + earned;
+      actualizarPerfil({ monedas: newPts }).catch(() => {});
+      return newPts;
+    });
     setMissionsCompleted((m) => m + 1);
     setLastReward("+15 XP • +15 monedas 🎉");
     stopExercise();
     setScreen("home");
     setTimeout(() => setLastReward(null), 3000);
-    // Persistir en backend
-    completarPausa({ tipo: "movimiento", actividad: "giro-cuello", duracionSegundos: 60 }).catch(() => {});
   }, [stopExercise]);
 
   const handlePausaBack = useCallback(() => { stopExercise(); setScreen("home"); }, [stopExercise]);
@@ -106,13 +108,15 @@ function App() {
   const handlePingPongBack = useCallback(() => {
     const earned = state.game?.record ? Math.max(state.game.record * 2, 20) : 20;
     stopPingPong();
-    setPoints((p) => p + earned);
+    setPoints((p) => {
+      const newPts = p + earned;
+      actualizarPerfil({ monedas: newPts }).catch(() => {});
+      return newPts;
+    });
     setMissionsCompleted((m) => m + 1);
     setLastReward(`+${earned} XP • +${earned} monedas 🏓`);
     setTimeout(() => setLastReward(null), 3000);
     setScreen("home");
-    // Persistir en backend
-    completarPausa({ tipo: "diversion", actividad: "ping-pong", duracionSegundos: 120 }).catch(() => {});
   }, [stopPingPong, state.game]);
 
   const goToApp = useCallback(() => setScreen("auth"), []);
@@ -260,10 +264,13 @@ function App() {
           stream={currentStream}
           onBack={() => {
             stopPingPong();
-            setPoints((p) => p + 15);
+            setPoints((p) => {
+              const newPts = p + 15;
+              actualizarPerfil({ monedas: newPts }).catch(() => {});
+              return newPts;
+            });
             setMissionsCompleted((m) => m + 1);
             setScreen("home");
-            completarPausa({ tipo: "diversion", actividad: "ar-paint", duracionSegundos: 90 }).catch(() => {});
           }}
         />
       )}
@@ -277,10 +284,13 @@ function App() {
           state={state}
           landmarks={state.landmarks}
           onBack={() => {
-            setPoints((p) => p + 10);
+            setPoints((p) => {
+              const newPts = p + 10;
+              actualizarPerfil({ monedas: newPts }).catch(() => {});
+              return newPts;
+            });
             setMissionsCompleted((m) => m + 1);
             setScreen("home");
-            completarPausa({ tipo: "diversion", actividad: "memes", duracionSegundos: 60 }).catch(() => {});
           }}
         />
       )}
@@ -294,11 +304,14 @@ function App() {
           stream={currentStream}
           srcVideoRef={videoRef}
           onCompleted={() => {
-            setPoints((p) => p + 20);
+            setPoints((p) => {
+              const newPts = p + 20;
+              actualizarPerfil({ monedas: newPts }).catch(() => {});
+              return newPts;
+            });
             setMissionsCompleted((m) => m + 1);
             stopExercise();
             setScreen("home");
-            completarPausa({ tipo: "movimiento", actividad: "estiramiento", duracionSegundos: 90 }).catch(() => {});
           }}
           onBack={() => { stopExercise(); setScreen("home"); }}
         />
