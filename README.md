@@ -101,8 +101,6 @@ graph TB
         AG[API Gateway]
         LM[Lambda]
         DDB[DynamoDB]
-        BR[Amazon Bedrock]
-        PO[Amazon Polly]
     end
 
     LP --> DB
@@ -122,8 +120,6 @@ graph TB
     AMP --> AG
     AG --> LM
     LM --> DDB
-    LM --> BR
-    LM --> PO
 ```
 
 ### Flujo de datos en tiempo real:
@@ -199,8 +195,6 @@ graph LR
 | API Gateway | REST API |
 | Lambda | Funciones serverless |
 | DynamoDB | Base de datos |
-| Amazon Bedrock | IA Generativa |
-| Amazon Polly | Text-to-Speech |
 
 ---
 

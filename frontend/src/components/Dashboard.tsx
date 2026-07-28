@@ -112,7 +112,7 @@ export function Dashboard({
   const [editingNick, setEditingNick] = useState(false);
   const [nickInput, setNickInput] = useState("Dev");
   const [coins, setCoins] = useState(points);
-  const [streakDays, setStreakDays] = useState<boolean[]>(Array(28).fill(false));
+  const [streakDays, setStreakDays] = useState([false, false, false, false, false, false, false]);
   const [showReward, setShowReward] = useState<{ xp: number; coins: number; message: string } | null>(null);
   const [levelUpReward, setLevelUpReward] = useState<string | null>(null);
   const [profileBg, setProfileBg] = useState("#7c3aed");
@@ -145,7 +145,7 @@ export function Dashboard({
     if (missionsCompleted > 0) {
       setStreakDays((sd) => {
         const filled = sd.filter(Boolean).length;
-        if (filled < missionsCompleted && filled < 28) {
+        if (filled < missionsCompleted && filled < 7) {
           const next = [...sd];
           next[filled] = true;
           return next;
@@ -344,10 +344,10 @@ export function Dashboard({
                     <span className="dash-racha__label">días</span>
                   </div>
                   <div className="dash-racha__calendar">
-                    {streakDays.map((active, i) => (
-                      <div key={i} className={`dash-racha__cell ${active ? "active" : ""}`}>
-                        <span className="dash-racha__fire">{active ? "🔥" : "○"}</span>
-                        <span className="dash-racha__day-label">{i + 1}</span>
+                    {DAYS.map((d, i) => (
+                      <div key={i} className={`dash-racha__cell ${streakDays[i] ? "active" : ""}`}>
+                        <span className="dash-racha__fire">{streakDays[i] ? "🔥" : "○"}</span>
+                        <span className="dash-racha__day-label">{d}</span>
                       </div>
                     ))}
                   </div>
@@ -669,6 +669,10 @@ export function Dashboard({
               <div className="dash-relax__folleto">
                 <h4><span className="material-symbols-rounded">menu_book</span> Información sobre lesiones</h4>
                 <iframe src="https://www.covver.com/embed/h8r1HZC2t2Ma8iTyvc1n" width="100%" height="500" style={{border:"none",borderRadius:"16px"}} allowFullScreen allow="web-share"></iframe>
+              </div>
+              <div className="dash-relax__folleto">
+                <h4><span className="material-symbols-rounded">self_improvement</span> Guía de bienestar</h4>
+                <iframe src="https://www.covver.com/embed/TFMMUI4XT3mNebCC2L7D" width="100%" height="580" style={{border:"none",borderRadius:"16px"}} allowFullScreen allow="web-share"></iframe>
               </div>
               <div className="dash-relax__candle-wrapper">
                 <div className="candle-scene">
