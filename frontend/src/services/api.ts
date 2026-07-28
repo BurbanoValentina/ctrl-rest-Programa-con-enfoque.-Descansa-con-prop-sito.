@@ -92,12 +92,16 @@ export async function iniciarPausa(tipo: string): Promise<void> {
 
 /**
  * POST /pausa/completar - Registrar pausa completada (suma puntos y racha)
+ * 
+ * tipo: "salud-mental" | "movimiento" | "diversion" | "calma"
+ * actividad: nombre corto de la actividad realizada
+ * duracionSegundos: duración de la actividad (10-300)
  */
 export async function completarPausa(data: {
   tipo: string;
-  puntosGanados: number;
-  monedasGanadas: number;
-}): Promise<UserProfile> {
+  actividad: string;
+  duracionSegundos: number;
+}): Promise<{ mensaje: string; puntosObtenidos: number; nuevaRacha: number }> {
   const res = await authFetch("/pausa/completar", {
     method: "POST",
     body: JSON.stringify(data),
