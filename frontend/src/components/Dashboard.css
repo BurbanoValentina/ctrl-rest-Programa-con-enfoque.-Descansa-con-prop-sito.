@@ -58,26 +58,26 @@
 @keyframes fadeIn { from{opacity:0;transform:translateY(3px)} to{opacity:1;transform:translateY(0)} }
 
 /* Racha */
-.dash-racha { padding:1.5rem; display:flex; flex-direction:column; align-items:center; gap:0.6rem; }
+.dash-racha { padding:2rem; display:flex; flex-direction:column; align-items:center; gap:0.8rem; }
 .dash-racha__header { display:flex; align-items:center; gap:0.5rem; }
-.dash-racha__header h4 { color:#fff; font-size:1rem; font-weight:700; }
-.dash-racha__header .material-symbols-rounded { font-size:1.3rem; color:#f59e0b; }
+.dash-racha__header h4 { color:#fff; font-size:1.1rem; font-weight:700; }
+.dash-racha__header .material-symbols-rounded { font-size:1.4rem; color:#f59e0b; }
 .dash-racha__number { display:flex; align-items:baseline; gap:0.3rem; }
-.dash-racha__big { font-size:2.5rem; font-weight:800; color:#fff; }
-.dash-racha__label { font-size:0.88rem; color:#9ca3af; }
-.dash-racha__calendar { display:grid; grid-template-columns:repeat(7,1fr); gap:0.4rem; width:100%; }
-.dash-racha__cell { display:flex; flex-direction:column; align-items:center; gap:0.15rem; }
-.dash-racha__fire { font-size:1.1rem; opacity:0.2; transition:opacity 0.3s; }
+.dash-racha__big { font-size:3.5rem; font-weight:800; color:#fff; }
+.dash-racha__label { font-size:1rem; color:#9ca3af; }
+.dash-racha__calendar { display:flex; gap:0.8rem; }
+.dash-racha__cell { display:flex; flex-direction:column; align-items:center; gap:0.3rem; }
+.dash-racha__fire { font-size:1.5rem; opacity:0.3; transition:opacity 0.3s; }
 .dash-racha__cell.active .dash-racha__fire { opacity:1; }
-.dash-racha__day-label { font-size:0.6rem; color:#6b7280; font-weight:600; }
+.dash-racha__day-label { font-size:0.8rem; color:#6b7280; font-weight:600; }
 
 /* Timer card */
-.dash-timer-card { padding:1.5rem 2.5rem; display:flex; align-items:center; gap:2.5rem; }
-.dash-timer-card__left { display:flex; flex-direction:column; align-items:center; gap:0.5rem; }
-.dash-timer-card__label { color:#9ca3af; font-size:0.88rem; }
-.dash-timer-card__time-row { display:flex; align-items:center; gap:1rem; }
-.dash-timer-card__time { font-size:3.5rem; font-weight:800; color:#fff; letter-spacing:-2px; }
-.dash-timer-card__ring { width:70px; height:70px; }
+.dash-timer-card { padding:2.5rem 3rem; display:flex; align-items:center; gap:3.5rem; }
+.dash-timer-card__left { display:flex; flex-direction:column; align-items:center; gap:0.7rem; }
+.dash-timer-card__label { color:#9ca3af; font-size:1rem; }
+.dash-timer-card__time-row { display:flex; align-items:center; gap:1.5rem; }
+.dash-timer-card__time { font-size:5rem; font-weight:800; color:#fff; letter-spacing:-3px; }
+.dash-timer-card__ring { width:100px; height:100px; }
 .dash-timer-card__right { display:flex; flex-direction:column; gap:1rem; }
 .dash-timer-card__picker { position:relative; }
 .dash-timer-card__picker-btn { display:flex; align-items:center; gap:0.4rem; padding:0.6rem 1.2rem; border:1px solid rgba(255,255,255,0.12); border-radius:10px; background:transparent; color:#d1d5db; font-size:1rem; cursor:pointer; }
