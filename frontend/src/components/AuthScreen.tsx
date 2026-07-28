@@ -28,7 +28,11 @@ export function AuthScreen({ onLogin, onBack }: AuthScreenProps) {
 
     if (!name.trim()) { setError("Ingresa tu nombre"); return; }
     if (!email.trim()) { setError("Ingresa tu correo"); return; }
-    if (password.length < 8) { setError("La contraseña debe tener al menos 8 caracteres"); return; }
+    if (password.length < 8) { setError("La contraseña no cumple los requisitos"); return; }
+    if (!/[A-Z]/.test(password)) { setError("La contraseña necesita al menos una mayúscula"); return; }
+    if (!/[a-z]/.test(password)) { setError("La contraseña necesita al menos una minúscula"); return; }
+    if (!/[0-9]/.test(password)) { setError("La contraseña necesita al menos un número"); return; }
+    if (!/[^A-Za-z0-9]/.test(password)) { setError("La contraseña necesita al menos un carácter especial"); return; }
     if (password !== confirmPass) { setError("Las contraseñas no coinciden"); return; }
 
     setLoading(true);
@@ -40,8 +44,10 @@ export function AuthScreen({ onLogin, onBack }: AuthScreenProps) {
       const msg = err?.message || "Error al registrarse";
       if (msg.includes("UsernameExistsException") || msg.includes("User already exists")) {
         setError("Ya existe una cuenta con ese correo");
-      } else if (msg.includes("InvalidPasswordException")) {
-        setError("La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número");
+      } else if (msg.includes("InvalidPasswordException") || msg.includes("Password did not conform")) {
+        setError("La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial");
+      } else if (msg.includes("InvalidParameterException")) {
+        setError("Verifica que todos los campos estén completos y sean válidos");
       } else {
         setError(msg);
       }
@@ -203,6 +209,15 @@ export function AuthScreen({ onLogin, onBack }: AuthScreenProps) {
                 <div className="auth__field">
                   <label>Contraseña</label>
                   <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} />
+                  {mode === "register" && (
+                    <ul className="auth__password-rules">
+                      <li className={password.length >= 8 ? "valid" : ""}>Mínimo 8 caracteres</li>
+                      <li className={/[A-Z]/.test(password) ? "valid" : ""}>Al menos una mayúscula</li>
+                      <li className={/[a-z]/.test(password) ? "valid" : ""}>Al menos una minúscula</li>
+                      <li className={/[0-9]/.test(password) ? "valid" : ""}>Al menos un número</li>
+                      <li className={/[^A-Za-z0-9]/.test(password) ? "valid" : ""}>Al menos un carácter especial</li>
+                    </ul>
+                  )}
                 </div>
                 {mode === "register" && (
                   <div className="auth__field">
