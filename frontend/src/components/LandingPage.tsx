@@ -184,8 +184,8 @@ export function LandingPage({ onStart }: LandingPageProps) {
           </div>
           <div className="lp-arch__arrow"><span className="material-symbols-rounded">arrow_forward</span></div>
           <div className="lp-arch__item">
-            <div className="lp-arch__icon"><span className="material-symbols-rounded">cloud_upload</span></div>
-            <span>AWS<br />Amplify</span>
+            <div className="lp-arch__icon"><span className="material-symbols-rounded">inventory_2</span></div>
+            <span>Amazon<br />S3</span>
           </div>
           <div className="lp-arch__arrow"><span className="material-symbols-rounded">arrow_forward</span></div>
           <div className="lp-arch__item">
